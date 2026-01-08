@@ -1,0 +1,659 @@
+/**
+ * ROAS Calculator Styles
+ * Return on Ad Spend Calculator for Shopify
+ * Version: 2.0.0
+ */
+
+/* Container */
+.roas-calculator-wrapper {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Header */
+.roas-calculator-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.roas-calculator-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.roas-calculator-subtitle {
+    font-size: 1rem;
+    color: #6B7280;
+    margin: 0;
+}
+
+/* Currency Selector */
+.roas-currency-selector {
+    margin-bottom: 2rem;
+}
+
+.roas-currency-label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.roas-currency-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: #1F2937;
+    background-color: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.roas-currency-select:hover {
+    border-color: #3B82F6;
+    background-color: #FFFFFF;
+}
+
+.roas-currency-select:focus {
+    outline: none;
+    border-color: #3B82F6;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Form */
+.roas-calculator-form {
+    margin-bottom: 2rem;
+}
+
+.roas-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.roas-field {
+    position: relative;
+}
+
+.roas-label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.roas-input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: #1F2937;
+    background-color: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.roas-input:hover {
+    border-color: #3B82F6;
+    background-color: #FFFFFF;
+}
+
+.roas-input:focus {
+    outline: none;
+    border-color: #3B82F6;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.roas-input.roas-error-input {
+    border-color: #EF4444;
+    background-color: #FEF2F2;
+}
+
+.roas-error {
+    display: block;
+    color: #EF4444;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    min-height: 1.25rem;
+}
+
+/* Calculate Button */
+.roas-calculate-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.roas-calculate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px -1px rgba(59, 130, 246, 0.4);
+}
+
+.roas-calculate-btn:active {
+    transform: translateY(0);
+}
+
+.roas-calculate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.roas-calculate-btn.loading::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 10px;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: roas-spin 0.6s linear infinite;
+}
+
+@keyframes roas-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Results Section */
+.roas-results {
+    display: none;
+    margin-top: 2rem;
+    animation: roas-fadeIn 0.5s ease;
+}
+
+@keyframes roas-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Main ROAS Card */
+.roas-main-card {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    text-align: center;
+    border: 2px solid #3B82F6;
+}
+
+.roas-main-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1E40AF;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ROAS Gauge */
+.roas-gauge-container {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 1.5rem auto;
+}
+
+.roas-gauge {
+    width: 100%;
+    height: 150px;
+    position: relative;
+    overflow: hidden;
+}
+
+.roas-gauge-background {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(90deg,
+        #EF4444 0%,
+        #F97316 16.67%,
+        #FBBF24 33.33%,
+        #84CC16 50%,
+        #10B981 66.67%,
+        #059669 83.33%,
+        #047857 100%
+    );
+    border-radius: 150px 150px 0 0;
+    position: relative;
+    opacity: 0.3;
+}
+
+.roas-gauge-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(90deg,
+        #EF4444 0%,
+        #F97316 16.67%,
+        #FBBF24 33.33%,
+        #84CC16 50%,
+        #10B981 66.67%,
+        #059669 83.33%,
+        #047857 100%
+    );
+    border-radius: 150px 150px 0 0;
+    clip-path: polygon(0 100%, 0% 100%, 0% 100%, 0 100%);
+    transition: clip-path 1s ease-out;
+}
+
+.roas-gauge-needle {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 4px;
+    height: 140px;
+    background: #1F2937;
+    transform-origin: bottom center;
+    transform: translateX(-50%) rotate(-90deg);
+    transition: transform 1s ease-out;
+    border-radius: 2px 2px 0 0;
+    z-index: 10;
+}
+
+.roas-gauge-needle::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: #1F2937;
+    border-radius: 50%;
+    border: 3px solid #FFFFFF;
+}
+
+.roas-gauge-center {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    background: #1F2937;
+    border-radius: 50%;
+    border: 4px solid #FFFFFF;
+    z-index: 11;
+}
+
+.roas-main-value {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #1E40AF;
+    margin: 0;
+    line-height: 1;
+}
+
+.roas-performance-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Performance Badge Colors */
+.roas-performance-poor {
+    background: #FEE2E2;
+    color: #991B1B;
+    border: 2px solid #EF4444;
+}
+
+.roas-performance-breakeven {
+    background: #FFEDD5;
+    color: #9A3412;
+    border: 2px solid #F97316;
+}
+
+.roas-performance-average {
+    background: #FEF3C7;
+    color: #92400E;
+    border: 2px solid #FBBF24;
+}
+
+.roas-performance-good {
+    background: #DCFCE7;
+    color: #14532D;
+    border: 2px solid #84CC16;
+}
+
+.roas-performance-excellent {
+    background: #D1FAE5;
+    color: #065F46;
+    border: 2px solid #10B981;
+}
+
+.roas-performance-outstanding {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    color: #FFFFFF;
+    border: 2px solid #FFD700;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+    animation: roas-pulse 2s ease-in-out infinite;
+}
+
+@keyframes roas-pulse {
+    0%, 100% {
+        box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(5, 150, 105, 0.6);
+    }
+}
+
+/* Secondary Metrics */
+.roas-secondary-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.roas-metric-card {
+    background: #F9FAFB;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #E5E7EB;
+    transition: all 0.3s ease;
+}
+
+.roas-metric-card:hover {
+    border-color: #3B82F6;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+.roas-metric-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6B7280;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.roas-metric-value {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0;
+}
+
+.roas-metric-positive {
+    color: #10B981;
+}
+
+.roas-metric-negative {
+    color: #EF4444;
+}
+
+/* Breakdown Table */
+.roas-breakdown {
+    margin-bottom: 2rem;
+}
+
+.roas-breakdown-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin-bottom: 1rem;
+}
+
+.roas-breakdown-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #FFFFFF;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.roas-breakdown-table th,
+.roas-breakdown-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.roas-breakdown-table th {
+    background: #F3F4F6;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.roas-breakdown-table td {
+    color: #1F2937;
+    font-size: 0.875rem;
+}
+
+.roas-breakdown-table tr:last-child td {
+    border-bottom: none;
+}
+
+.roas-breakdown-table tr:hover {
+    background: #F9FAFB;
+}
+
+.roas-breakdown-value {
+    font-weight: 600;
+    color: #3B82F6;
+}
+
+/* Copy Button */
+.roas-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #3B82F6;
+    background: #FFFFFF;
+    border: 2px solid #3B82F6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 0.5rem;
+}
+
+.roas-copy-btn:hover {
+    background: #3B82F6;
+    color: #FFFFFF;
+}
+
+.roas-copy-btn.copied {
+    background: #10B981;
+    border-color: #10B981;
+    color: #FFFFFF;
+}
+
+/* Reset Button */
+.roas-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6B7280;
+    background: #FFFFFF;
+    border: 2px solid #D1D5DB;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.roas-reset-btn:hover {
+    border-color: #6B7280;
+    color: #1F2937;
+}
+
+/* CTA Section */
+.roas-cta {
+    display: none;
+    text-align: center;
+    margin-top: 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
+    border-radius: 12px;
+    border: 2px solid #3B82F6;
+}
+
+.roas-cta-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1E40AF;
+    margin: 0 0 0.5rem 0;
+}
+
+.roas-cta-description {
+    font-size: 1rem;
+    color: #1F2937;
+    margin: 0 0 1.5rem 0;
+}
+
+.roas-cta-btn {
+    display: inline-block;
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3);
+}
+
+.roas-cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px -1px rgba(59, 130, 246, 0.4);
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .roas-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .roas-field:last-child {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 640px) {
+    .roas-calculator-wrapper {
+        padding: 1.5rem;
+    }
+
+    .roas-calculator-title {
+        font-size: 1.5rem;
+    }
+
+    .roas-main-value {
+        font-size: 2.5rem;
+    }
+
+    .roas-secondary-metrics {
+        grid-template-columns: 1fr;
+    }
+
+    .roas-breakdown-table th,
+    .roas-breakdown-table td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .roas-gauge-container {
+        max-width: 250px;
+    }
+
+    .roas-gauge,
+    .roas-gauge-background {
+        height: 125px;
+    }
+
+    .roas-gauge-needle {
+        height: 115px;
+    }
+}
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Print Styles */
+@media print {
+    .roas-calculate-btn,
+    .roas-reset-btn,
+    .roas-copy-btn {
+        display: none;
+    }
+
+    .roas-results {
+        display: block !important;
+    }
+
+    .roas-calculator-wrapper {
+        box-shadow: none;
+    }
+}
+
+/* Animation for counting numbers */
+.counting {
+    animation: roas-count 0.3s ease;
+}
+
+@keyframes roas-count {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}

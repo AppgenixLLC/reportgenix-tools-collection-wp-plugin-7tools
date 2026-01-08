@@ -1,0 +1,657 @@
+/**
+ * CAC Calculator Styles
+ * Customer Acquisition Cost Calculator
+ * Version: 2.0.0
+ */
+
+/* Container */
+.cac-calculator-wrapper {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #FAF5FF;
+    border-radius: 16px;
+    padding: 2rem;
+}
+
+/* Header */
+.cac-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.cac-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.cac-subtitle {
+    font-size: 1rem;
+    color: #6B7280;
+    margin: 0;
+}
+
+/* Currency Selector */
+.cac-currency-selector {
+    background: #FFFFFF;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cac-currency-label {
+    display: block;
+    font-weight: 600;
+    color: #1F2937;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.cac-currency-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: #1F2937;
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.cac-currency-select:hover {
+    border-color: var(--primary-color, #8B5CF6);
+    background: #FFFFFF;
+}
+
+.cac-currency-select:focus {
+    outline: none;
+    border-color: var(--primary-color, #8B5CF6);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+/* Form */
+.cac-form {
+    background: #FFFFFF;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cac-form-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.cac-field {
+    position: relative;
+}
+
+.cac-label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.cac-optional-badge {
+    font-weight: 400;
+    color: #9CA3AF;
+    font-size: 0.75rem;
+}
+
+.cac-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.cac-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    color: #1F2937;
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.cac-input:hover {
+    border-color: var(--primary-color, #8B5CF6);
+    background: #FFFFFF;
+}
+
+.cac-input:focus {
+    outline: none;
+    border-color: var(--primary-color, #8B5CF6);
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.cac-input.cac-error-input {
+    border-color: #EF4444;
+    background: #FEF2F2;
+}
+
+/* Currency and Icon Indicators */
+.cac-currency-prefix,
+.cac-currency-suffix,
+.cac-input-icon {
+    position: absolute;
+    font-weight: 600;
+    color: #6B7280;
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.cac-currency-prefix,
+.cac-input-icon {
+    left: 1rem;
+}
+
+.cac-currency-suffix {
+    right: 1rem;
+}
+
+/* Helper Text */
+.cac-helper {
+    display: block;
+    font-size: 0.75rem;
+    color: #9CA3AF;
+    margin: 0.5rem 0 0 0;
+}
+
+/* Error Messages */
+.cac-error {
+    display: block;
+    color: #EF4444;
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+    min-height: 1.25rem;
+}
+
+/* Calculate Button */
+.cac-calculate-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, var(--primary-color, #8B5CF6) 0%, #6D28D9 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(139, 92, 246, 0.3);
+}
+
+.cac-calculate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 12px -1px rgba(139, 92, 246, 0.4);
+}
+
+.cac-calculate-btn:active {
+    transform: translateY(0);
+}
+
+.cac-calculate-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.cac-calculate-btn.loading::after {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: 10px;
+    border: 2px solid #FFFFFF;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: cac-spin 0.6s linear infinite;
+}
+
+@keyframes cac-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Results Section */
+.cac-results {
+    display: none;
+    margin-top: 2rem;
+    animation: cac-fadeIn 0.5s ease;
+}
+
+@keyframes cac-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Main Result Card */
+.cac-main-result {
+    background: linear-gradient(135deg, #FFFFFF 0%, #F3E8FF 100%);
+    padding: 2.5rem;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 2rem;
+    border: 2px solid var(--primary-color, #8B5CF6);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.cac-result-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.cac-result-value {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--primary-color, #8B5CF6);
+    margin: 0;
+    line-height: 1;
+    animation: cac-count 0.8s ease;
+}
+
+@keyframes cac-count {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+.cac-result-label {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin-top: 1rem;
+}
+
+.cac-result-subtext {
+    font-size: 0.875rem;
+    color: #6B7280;
+    margin-top: 0.5rem;
+}
+
+.cac-performance-badge {
+    margin-top: 1.5rem;
+}
+
+.cac-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.cac-badge-very-low {
+    background: #FEF3C7;
+    color: #92400E;
+    border: 2px solid #FBBF24;
+}
+
+.cac-badge-low {
+    background: #D1FAE5;
+    color: #065F46;
+    border: 2px solid #10B981;
+}
+
+.cac-badge-average {
+    background: #DBEAFE;
+    color: #1E40AF;
+    border: 2px solid #3B82F6;
+}
+
+.cac-badge-moderate {
+    background: #FFEDD5;
+    color: #9A3412;
+    border: 2px solid #F97316;
+}
+
+.cac-badge-high {
+    background: #FFEDD5;
+    color: #9A3412;
+    border: 2px solid #F97316;
+}
+
+.cac-badge-very-high {
+    background: #FEE2E2;
+    color: #991B1B;
+    border: 2px solid #EF4444;
+}
+
+/* Metrics Grid */
+.cac-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.cac-metric-card {
+    background: #FFFFFF;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #E5E7EB;
+    transition: all 0.3s ease;
+}
+
+.cac-metric-card:hover {
+    border-color: var(--primary-color, #8B5CF6);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+    transform: translateY(-2px);
+}
+
+.cac-metric-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.cac-metric-icon {
+    font-size: 1.25rem;
+}
+
+.cac-metric-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.cac-metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin-bottom: 1rem;
+}
+
+.cac-metric-bar {
+    width: 100%;
+    height: 8px;
+    background: #E5E7EB;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.75rem;
+}
+
+.cac-metric-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color, #8B5CF6) 0%, #6D28D9 100%);
+    border-radius: 4px;
+    transition: width 1s ease-out;
+}
+
+.cac-metric-bar-fill.excellent {
+    background: linear-gradient(90deg, #10B981 0%, #059669 100%);
+}
+
+.cac-metric-bar-fill.good {
+    background: linear-gradient(90deg, #84CC16 0%, #65A30D 100%);
+}
+
+.cac-metric-bar-fill.average {
+    background: linear-gradient(90deg, #FBBF24 0%, #F59E0B 100%);
+}
+
+.cac-metric-bar-fill.poor {
+    background: linear-gradient(90deg, #F97316 0%, #EF4444 100%);
+}
+
+.cac-metric-status {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.cac-metric-status.excellent {
+    color: #10B981;
+}
+
+.cac-metric-status.good {
+    color: #84CC16;
+}
+
+.cac-metric-status.average {
+    color: #F59E0B;
+}
+
+.cac-metric-status.poor {
+    color: #EF4444;
+}
+
+.cac-metric-description {
+    font-size: 0.875rem;
+    color: #6B7280;
+}
+
+/* Breakdown Section */
+.cac-breakdown {
+    background: #FFFFFF;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #E5E7EB;
+    margin-bottom: 2rem;
+}
+
+.cac-breakdown-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 1rem 0;
+}
+
+.cac-breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #E5E7EB;
+    font-size: 0.875rem;
+    color: #6B7280;
+}
+
+.cac-breakdown-row:last-child {
+    border-bottom: none;
+}
+
+.cac-breakdown-result {
+    background: #F9FAFB;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    border-radius: 8px;
+    border-bottom: none !important;
+}
+
+.cac-breakdown-value {
+    font-weight: 600;
+    color: #1F2937;
+    font-size: 1rem;
+}
+
+/* Tips Section */
+.cac-tips {
+    background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 2px solid #3B82F6;
+    margin-bottom: 2rem;
+}
+
+.cac-tips-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #1E40AF;
+    margin: 0 0 1rem 0;
+}
+
+.cac-tips-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    list-style: disc;
+}
+
+.cac-tips-list li {
+    color: #1F2937;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.cac-tips-list li:last-child {
+    margin-bottom: 0;
+}
+
+/* Action Buttons */
+.cac-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.cac-reset-btn,
+.cac-copy-btn {
+    flex: 1;
+    min-width: 150px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid;
+}
+
+.cac-reset-btn {
+    color: #6B7280;
+    background: #FFFFFF;
+    border-color: #D1D5DB;
+}
+
+.cac-reset-btn:hover {
+    border-color: #6B7280;
+    color: #1F2937;
+    transform: translateY(-2px);
+}
+
+.cac-copy-btn {
+    color: var(--primary-color, #8B5CF6);
+    background: #FFFFFF;
+    border-color: var(--primary-color, #8B5CF6);
+}
+
+.cac-copy-btn:hover {
+    background: var(--primary-color, #8B5CF6);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+}
+
+.cac-copy-btn.copied {
+    background: #10B981;
+    border-color: #10B981;
+    color: #FFFFFF;
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .cac-form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .cac-calculator-wrapper {
+        padding: 1.5rem;
+    }
+
+    .cac-title {
+        font-size: 1.5rem;
+    }
+
+    .cac-form {
+        padding: 1.5rem;
+    }
+
+    .cac-result-value {
+        font-size: 2.5rem;
+    }
+
+    .cac-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cac-actions {
+        flex-direction: column;
+    }
+
+    .cac-reset-btn,
+    .cac-copy-btn {
+        width: 100%;
+    }
+}
+
+/* Accessibility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Print Styles */
+@media print {
+    .cac-calculate-btn,
+    .cac-reset-btn,
+    .cac-copy-btn,
+    .cac-currency-selector {
+        display: none;
+    }
+
+    .cac-results {
+        display: block !important;
+    }
+
+    .cac-calculator-wrapper {
+        box-shadow: none;
+        background: #FFFFFF;
+    }
+}
+
+/* Animation for counting */
+.counting {
+    animation: cac-pulse 0.3s ease;
+}
+
+@keyframes cac-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}

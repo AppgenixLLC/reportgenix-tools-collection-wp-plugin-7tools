@@ -1,0 +1,826 @@
+/**
+ * CLV Calculator Styles
+ * Version: 2.0.0
+ * Theme: Emerald Green
+ */
+
+:root {
+    --clv-primary: #059669;
+    --clv-secondary: #047857;
+    --clv-accent: #10B981;
+    --clv-success: #22C55E;
+    --clv-warning: #F59E0B;
+    --clv-danger: #EF4444;
+    --clv-info: #3B82F6;
+    --clv-background: #ECFDF5;
+    --clv-card-bg: #FFFFFF;
+    --clv-text: #1F2937;
+    --clv-text-light: #64748B;
+    --clv-border: #E2E8F0;
+}
+
+.clv-calculator-wrapper {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Header Section */
+.clv-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.clv-title {
+    margin: 0 0 0.75rem 0;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--clv-text);
+    line-height: 1.2;
+}
+
+.clv-subtitle {
+    margin: 0;
+    font-size: 1.125rem;
+    color: var(--clv-text-light);
+}
+
+/* Currency Selector */
+.clv-currency-selector {
+    background: var(--clv-card-bg);
+    padding: 1.5rem 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin-bottom: 2rem;
+}
+
+.clv-currency-label {
+    display: block;
+    font-weight: 600;
+    color: var(--clv-text);
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.clv-currency-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: var(--clv-text);
+    background-color: #F8FAFC;
+    border: 2px solid var(--clv-border);
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.clv-currency-select:hover {
+    border-color: var(--clv-primary);
+    background-color: var(--clv-card-bg);
+}
+
+.clv-currency-select:focus {
+    outline: none;
+    border-color: var(--clv-primary);
+    background-color: var(--clv-card-bg);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+/* Form Section */
+.clv-form {
+    background: var(--clv-card-bg);
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    margin-bottom: 2rem;
+}
+
+.clv-field {
+    margin-bottom: 1.75rem;
+}
+
+.clv-field:last-of-type {
+    margin-bottom: 2rem;
+}
+
+.clv-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--clv-text);
+    font-size: 1rem;
+}
+
+.clv-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.clv-input-wrapper input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid var(--clv-border);
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+    color: var(--clv-text);
+    background: var(--clv-card-bg);
+}
+
+.clv-input-wrapper input:focus {
+    outline: none;
+    border-color: var(--clv-primary);
+    box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+}
+
+.clv-input-wrapper input.clv-error-input {
+    border-color: var(--clv-danger);
+}
+
+.clv-input-wrapper input.clv-error-input:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Currency and Suffix Indicators */
+.clv-currency-prefix,
+.clv-currency-suffix,
+.clv-input-suffix {
+    position: absolute;
+    font-weight: 600;
+    color: var(--clv-text-light);
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.clv-currency-prefix {
+    left: 1rem;
+}
+
+.clv-currency-suffix,
+.clv-input-suffix {
+    right: 1rem;
+}
+
+/* Input padding for currency fields */
+.clv-input-wrapper input[type="number"] {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+/* Helper Text */
+.clv-helper-text {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.875rem;
+    color: var(--clv-text-light);
+}
+
+/* Error Message */
+.clv-error {
+    display: block;
+    margin-top: 0.375rem;
+    font-size: 0.875rem;
+    color: var(--clv-danger);
+    min-height: 1.25rem;
+}
+
+/* Optional Field Styling */
+.clv-optional label {
+    color: var(--clv-text-light);
+}
+
+/* Calculate Button */
+.clv-calculate-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--clv-primary) 0%, var(--clv-secondary) 100%);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.clv-calculate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
+}
+
+.clv-calculate-btn:active {
+    transform: translateY(0);
+}
+
+.clv-calculate-btn:disabled {
+    background: #94A3B8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.clv-calculate-btn.loading {
+    position: relative;
+    color: transparent;
+}
+
+.clv-calculate-btn.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #FFFFFF;
+    border-radius: 50%;
+    animation: clv-spin 0.6s linear infinite;
+}
+
+@keyframes clv-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Results Section */
+.clv-results {
+    margin-top: 2rem;
+    animation: clv-slideIn 0.5s ease;
+}
+
+@keyframes clv-slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Main CLV Result */
+.clv-main-result {
+    background: linear-gradient(135deg, var(--clv-background) 0%, #D1FAE5 100%);
+    padding: 3rem 2rem;
+    border-radius: 16px;
+    text-align: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 16px -1px rgba(5, 150, 105, 0.15);
+    border: 2px solid var(--clv-accent);
+}
+
+.clv-result-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    line-height: 1;
+}
+
+.clv-result-value {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--clv-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1;
+}
+
+.clv-result-label {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--clv-text);
+    margin-bottom: 0.5rem;
+}
+
+.clv-result-subtext {
+    font-size: 1rem;
+    color: var(--clv-text-light);
+}
+
+/* Profit-Based CLV */
+.clv-profit-result {
+    background: var(--clv-card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--clv-border);
+}
+
+.clv-profit-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--clv-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.clv-profit-label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--clv-text);
+    margin-bottom: 0.25rem;
+}
+
+.clv-profit-subtext {
+    font-size: 0.875rem;
+    color: var(--clv-text-light);
+}
+
+/* CLV:CAC Ratio Health */
+.clv-ratio-health {
+    background: var(--clv-card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.clv-ratio-display {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.clv-ratio-value {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--clv-primary);
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.clv-ratio-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--clv-text);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Ratio Progress Bar */
+.clv-ratio-bar {
+    position: relative;
+    height: 40px;
+    background: #F1F5F9;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+
+.clv-ratio-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--clv-danger) 0%, var(--clv-warning) 33%, var(--clv-info) 66%, var(--clv-success) 100%);
+    border-radius: 20px;
+    transition: width 1s ease-out;
+    width: 0%;
+}
+
+.clv-ratio-markers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+}
+
+.clv-marker {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--clv-text);
+    background: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    z-index: 1;
+}
+
+.clv-ratio-status {
+    text-align: center;
+}
+
+.clv-status-badge {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.clv-status-badge.critical {
+    background: #FEE2E2;
+    color: #991B1B;
+    border: 2px solid var(--clv-danger);
+}
+
+.clv-status-badge.poor {
+    background: #FED7AA;
+    color: #9A3412;
+    border: 2px solid var(--clv-warning);
+}
+
+.clv-status-badge.average {
+    background: #FEF3C7;
+    color: #92400E;
+    border: 2px solid #FBBF24;
+}
+
+.clv-status-badge.good {
+    background: #D1FAE5;
+    color: #065F46;
+    border: 2px solid var(--clv-accent);
+}
+
+.clv-status-badge.excellent {
+    background: #A7F3D0;
+    color: #064E3B;
+    border: 2px solid var(--clv-success);
+    animation: clv-pulse 2s ease-in-out infinite;
+}
+
+@keyframes clv-pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+    }
+}
+
+.clv-status-text {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--clv-text-light);
+}
+
+/* Metrics Grid */
+.clv-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.clv-metric-card {
+    background: var(--clv-card-bg);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 2px solid var(--clv-border);
+}
+
+.clv-metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px -1px rgba(0, 0, 0, 0.15);
+    border-color: var(--clv-primary);
+}
+
+.clv-metric-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+    line-height: 1;
+}
+
+.clv-metric-value {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--clv-primary);
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+
+.clv-metric-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--clv-text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* Breakdown Table */
+.clv-breakdown {
+    background: var(--clv-card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+.clv-breakdown-title {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--clv-text);
+}
+
+.clv-breakdown-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.clv-breakdown-table tr {
+    border-bottom: 1px solid var(--clv-border);
+}
+
+.clv-breakdown-table tr:last-child {
+    border-bottom: none;
+}
+
+.clv-breakdown-table td {
+    padding: 0.875rem 0;
+    font-size: 1rem;
+    color: var(--clv-text);
+}
+
+.clv-breakdown-table td:first-child {
+    font-weight: 500;
+}
+
+.clv-breakdown-table td:last-child {
+    text-align: right;
+    font-weight: 600;
+    color: var(--clv-primary);
+}
+
+.clv-breakdown-result td {
+    padding-top: 1rem;
+    font-size: 1.125rem;
+}
+
+.clv-breakdown-result td:last-child {
+    color: var(--clv-secondary);
+}
+
+/* Tips Section */
+.clv-tips {
+    background: linear-gradient(135deg, var(--clv-background) 0%, #D1FAE5 100%);
+    padding: 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    border: 2px solid var(--clv-accent);
+}
+
+.clv-tips-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--clv-text);
+}
+
+.clv-tips-list {
+    margin: 0;
+    padding-left: 1.5rem;
+    list-style: none;
+}
+
+.clv-tips-list li {
+    position: relative;
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    color: var(--clv-text);
+    line-height: 1.6;
+}
+
+.clv-tips-list li:last-child {
+    margin-bottom: 0;
+}
+
+.clv-tips-list li::before {
+    content: '✓';
+    position: absolute;
+    left: -1.5rem;
+    color: var(--clv-success);
+    font-weight: 700;
+}
+
+.clv-tips-list li strong {
+    color: var(--clv-primary);
+}
+
+/* What-If Simulator */
+.clv-simulator {
+    background: var(--clv-card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+    border: 2px solid var(--clv-border);
+}
+
+.clv-simulator-title {
+    margin: 0 0 0.75rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--clv-text);
+}
+
+.clv-simulator-intro {
+    margin: 0 0 1.5rem 0;
+    font-size: 0.875rem;
+    color: var(--clv-text-light);
+}
+
+.clv-simulator-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.clv-sim-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--clv-background);
+    border-radius: 8px;
+    border: 2px solid var(--clv-accent);
+}
+
+.clv-sim-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--clv-text);
+}
+
+.clv-sim-result {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--clv-primary);
+}
+
+/* Action Buttons */
+.clv-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.clv-reset-btn,
+.clv-copy-btn {
+    padding: 0.875rem 2rem;
+    border: 2px solid var(--clv-primary);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--clv-card-bg);
+    color: var(--clv-primary);
+}
+
+.clv-reset-btn:hover,
+.clv-copy-btn:hover {
+    background: var(--clv-primary);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(5, 150, 105, 0.3);
+}
+
+.clv-copy-btn.copied {
+    background: var(--clv-success);
+    border-color: var(--clv-success);
+    color: #FFFFFF;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .clv-calculator-wrapper {
+        padding: 1rem;
+        margin: 1rem;
+    }
+
+    .clv-title {
+        font-size: 1.875rem;
+    }
+
+    .clv-subtitle {
+        font-size: 1rem;
+    }
+
+    .clv-form {
+        padding: 1.5rem;
+    }
+
+    .clv-result-value {
+        font-size: 2.5rem;
+    }
+
+    .clv-ratio-value {
+        font-size: 2rem;
+    }
+
+    .clv-metric-value {
+        font-size: 1.5rem;
+    }
+
+    .clv-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .clv-simulator-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .clv-actions {
+        flex-direction: column;
+    }
+
+    .clv-reset-btn,
+    .clv-copy-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+    .clv-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Print Styles */
+@media print {
+    .clv-calculate-btn,
+    .clv-actions {
+        display: none;
+    }
+
+    .clv-result-card,
+    .clv-breakdown,
+    .clv-tips {
+        box-shadow: none;
+        border: 1px solid var(--clv-border);
+        page-break-inside: avoid;
+    }
+}
+
+/* Accessibility */
+.clv-calculate-btn:focus,
+.clv-reset-btn:focus,
+.clv-copy-btn:focus,
+input:focus,
+select:focus {
+    outline: 2px solid var(--clv-primary);
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .clv-form,
+    .clv-main-result,
+    .clv-metric-card,
+    .clv-breakdown,
+    .clv-tips {
+        border: 2px solid #000;
+    }
+
+    input,
+    select {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .clv-results,
+    .clv-metric-card,
+    .clv-calculate-btn,
+    .clv-reset-btn,
+    .clv-copy-btn,
+    input,
+    select,
+    .clv-ratio-bar-fill {
+        animation: none;
+        transition: none;
+    }
+
+    .clv-metric-card:hover {
+        transform: none;
+    }
+}
+
+/* Number Counter Animation */
+.clv-metric-value.counting,
+.clv-result-value.counting {
+    animation: clv-countUp 0.8s ease-out;
+}
+
+@keyframes clv-countUp {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
