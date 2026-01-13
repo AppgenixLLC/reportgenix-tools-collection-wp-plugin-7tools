@@ -1,0 +1,374 @@
+/**
+ * POD Profit Calculator Styles
+ * Version: 1.0.0
+ */
+
+/* Main Wrapper */
+.podpc-wrapper {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 0;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+}
+
+/* Header */
+.podpc-header {
+    background: linear-gradient(135deg, #4F46E5 0%, #6366F1 100%);
+    padding: 2rem;
+    text-align: center;
+    color: white;
+}
+
+.podpc-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: white;
+}
+
+.podpc-subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+}
+
+/* Form Section - 2 Columns on Desktop */
+.podpc-form {
+    padding: 2rem;
+    background: #F9FAFB;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.podpc-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.podpc-field label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.podpc-icon {
+    font-size: 1.125rem;
+}
+
+/* Input Wrapper with Currency Prefix */
+.podpc-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.podpc-input-wrapper:focus-within {
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.podpc-currency-prefix {
+    padding: 0 0.75rem;
+    font-weight: 600;
+    color: #6B7280;
+    font-size: 1rem;
+    user-select: none;
+}
+
+.podpc-input {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #1F2937;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.podpc-input-wrapper .podpc-input {
+    padding-left: 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.podpc-input::placeholder {
+    color: #9CA3AF;
+}
+
+.podpc-input:focus {
+    outline: none;
+}
+
+/* Number input without wrapper */
+input.podpc-input[type="number"] {
+    border: 2px solid #E5E7EB;
+    background: white;
+    padding: 0.875rem 1rem;
+    transition: all 0.2s ease;
+}
+
+input.podpc-input[type="number"]:focus {
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Helper Text */
+.podpc-helper-text {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.875rem;
+    color: #6B7280;
+    font-style: italic;
+}
+
+/* Results Section - 2x2 Grid */
+.podpc-results {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding: 2rem;
+    background: white;
+}
+
+/* Result Cards */
+.podpc-result-card {
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    transition: all 0.3s ease;
+}
+
+.podpc-revenue-card {
+    border-left: 4px solid #6366F1;
+}
+
+.podpc-costs-card {
+    border-left: 4px solid #F59E0B;
+}
+
+.podpc-profit-card {
+    border-left: 4px solid #10B981;
+}
+
+.podpc-margin-card {
+    border-left: 4px solid #4F46E5;
+}
+
+.podpc-result-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #6B7280;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.podpc-result-icon {
+    font-size: 1.25rem;
+}
+
+.podpc-result-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin-bottom: 0.5rem;
+    word-break: break-all;
+}
+
+/* Specific card colors */
+.podpc-revenue-card .podpc-result-value {
+    color: #6366F1;
+}
+
+.podpc-costs-card .podpc-result-value {
+    color: #F59E0B;
+}
+
+.podpc-profit-card .podpc-result-value {
+    color: #10B981;
+}
+
+.podpc-margin-card .podpc-result-value {
+    color: #4F46E5;
+}
+
+/* Negative profit styling */
+.podpc-profit-card.negative {
+    border-left-color: #EF4444;
+    background: #FEF2F2;
+}
+
+.podpc-profit-card.negative .podpc-result-value {
+    color: #EF4444;
+}
+
+.podpc-margin-card.negative .podpc-result-value {
+    color: #EF4444;
+}
+
+.podpc-result-formula {
+    font-size: 0.75rem;
+    color: #9CA3AF;
+    font-style: italic;
+}
+
+/* Info Section */
+.podpc-info {
+    padding: 1.5rem 2rem 2rem 2rem;
+    background: #EEF2FF;
+    border-top: 2px solid #C7D2FE;
+}
+
+.podpc-info h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #3730A3;
+}
+
+.podpc-info ul {
+    margin: 0;
+    padding: 0 0 0 1.25rem;
+    color: #4338CA;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.podpc-info li {
+    margin-bottom: 0.5rem;
+}
+
+.podpc-info li:last-child {
+    margin-bottom: 0;
+}
+
+.podpc-info strong {
+    color: #3730A3;
+    font-weight: 600;
+}
+
+/* Responsive Design - Mobile (1 column) */
+@media (max-width: 768px) {
+    .podpc-wrapper {
+        margin: 1rem;
+        border-radius: 12px;
+    }
+
+    .podpc-header {
+        padding: 1.5rem;
+    }
+
+    .podpc-title {
+        font-size: 1.5rem;
+    }
+
+    .podpc-subtitle {
+        font-size: 0.875rem;
+    }
+
+    /* 1 column for inputs on mobile */
+    .podpc-form {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+        padding: 1.5rem;
+    }
+
+    /* 1 column for results on mobile */
+    .podpc-results {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1.5rem;
+    }
+
+    .podpc-result-value {
+        font-size: 1.75rem;
+    }
+
+    .podpc-info {
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .podpc-title {
+        font-size: 1.25rem;
+    }
+
+    .podpc-result-value {
+        font-size: 1.5rem;
+    }
+
+    .podpc-input {
+        font-size: 0.875rem;
+    }
+}
+
+/* Tablet - 2 columns for inputs, 1 or 2 for results */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .podpc-form {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .podpc-results {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .podpc-input-wrapper,
+    .podpc-input,
+    .podpc-result-card {
+        transition: none;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .podpc-wrapper {
+        box-shadow: none;
+        border: 1px solid #E5E7EB;
+    }
+
+    .podpc-input {
+        border: 1px solid #000;
+    }
+}
+
+/* Focus visible for accessibility */
+.podpc-input:focus-visible {
+    outline: 2px solid #4F46E5;
+    outline-offset: 2px;
+}
+
+/* Hide number input spinners in Chrome, Safari, Edge */
+.podpc-input[type="number"]::-webkit-outer-spin-button,
+.podpc-input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hide number input spinners in Firefox */
+.podpc-input[type="number"] {
+    -moz-appearance: textfield;
+}

@@ -1,0 +1,442 @@
+/**
+ * Shopify Fee Calculator Styles
+ * Version: 1.0.0
+ */
+
+/* Main Wrapper */
+.shopify-calc-wrapper {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+}
+
+/* Header */
+.shopify-calc-header {
+    background: linear-gradient(135deg, #5C6AC4 0%, #7C84C7 100%);
+    padding: 2rem;
+    text-align: center;
+    color: white;
+}
+
+.shopify-calc-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: white;
+}
+
+.shopify-calc-subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+}
+
+/* Input Section */
+.shopify-calc-inputs {
+    padding: 2rem;
+    background: #F9FAFB;
+}
+
+.shopify-calc-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    border: 2px solid #E5E7EB;
+}
+
+.shopify-calc-section:last-child {
+    margin-bottom: 0;
+}
+
+.shopify-calc-section-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.shopify-calc-icon {
+    font-size: 1.25rem;
+}
+
+/* Radio Buttons */
+.shopify-calc-radio-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.shopify-calc-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: #374151;
+}
+
+.shopify-calc-radio-label:hover {
+    border-color: #5C6AC4;
+    background: #F3F4F6;
+}
+
+.shopify-calc-radio-label input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.shopify-calc-radio-label input[type="radio"]:checked + span {
+    color: #5C6AC4;
+    font-weight: 600;
+}
+
+/* Checkboxes */
+.shopify-calc-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.shopify-calc-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: #F9FAFB;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    color: #374151;
+}
+
+.shopify-calc-checkbox-label:hover {
+    border-color: #5C6AC4;
+    background: #F3F4F6;
+}
+
+.shopify-calc-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.shopify-calc-checkbox-label input[type="checkbox"]:checked {
+    accent-color: #5C6AC4;
+}
+
+/* Other Gateway Fields */
+.shopify-calc-other-gateway {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #EEF2FF;
+    border-radius: 8px;
+    border: 2px solid #C7D2FE;
+}
+
+.shopify-calc-other-gateway.hidden {
+    display: none;
+}
+
+.shopify-calc-field {
+    margin-bottom: 1rem;
+}
+
+.shopify-calc-field:last-child {
+    margin-bottom: 0;
+}
+
+.shopify-calc-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+/* Input Wrapper with Prefix */
+.shopify-calc-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.shopify-calc-input-wrapper:focus-within {
+    border-color: #5C6AC4;
+    box-shadow: 0 0 0 3px rgba(92, 106, 196, 0.1);
+}
+
+.shopify-calc-currency-prefix,
+.shopify-calc-percent-suffix {
+    padding: 0 0.75rem;
+    font-weight: 600;
+    color: #6B7280;
+    font-size: 1rem;
+    user-select: none;
+}
+
+.shopify-calc-input {
+    flex: 1;
+    padding: 0.875rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #1F2937;
+    background: transparent;
+    outline: none;
+    width: 100%;
+}
+
+.shopify-calc-input-wrapper .shopify-calc-input {
+    padding-left: 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.shopify-calc-input::placeholder {
+    color: #9CA3AF;
+}
+
+input.shopify-calc-input[type="number"] {
+    border: 2px solid #E5E7EB;
+    background: white;
+    padding: 0.875rem 1rem;
+    transition: all 0.2s ease;
+}
+
+input.shopify-calc-input[type="number"]:focus {
+    border-color: #5C6AC4;
+    box-shadow: 0 0 0 3px rgba(92, 106, 196, 0.1);
+}
+
+/* Results Section - 3 Columns */
+.shopify-calc-results {
+    padding: 2rem;
+    background: white;
+}
+
+.shopify-calc-results-title {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #374151;
+    text-align: center;
+}
+
+.shopify-calc-plans {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+/* Plan Card */
+.shopify-calc-plan {
+    background: #F9FAFB;
+    border: 3px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.shopify-calc-plan.best-value {
+    border-color: #10B981;
+    background: #F0FDF4;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+}
+
+.shopify-calc-plan-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #E5E7EB;
+}
+
+.shopify-calc-plan.best-value .shopify-calc-plan-header {
+    border-bottom-color: #10B981;
+}
+
+.shopify-calc-plan-name {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.shopify-calc-plan-price {
+    margin: 0;
+    font-size: 1rem;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.shopify-calc-best-value-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: #10B981;
+    color: white;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-top: 0.5rem;
+}
+
+/* Fee Breakdown */
+.shopify-calc-fee-breakdown {
+    margin-bottom: 1rem;
+}
+
+.shopify-calc-fee-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #E5E7EB;
+    font-size: 0.875rem;
+}
+
+.shopify-calc-fee-item:last-child {
+    border-bottom: none;
+}
+
+.shopify-calc-fee-label {
+    color: #6B7280;
+    font-weight: 500;
+    flex: 1;
+}
+
+.shopify-calc-fee-value {
+    color: #1F2937;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* Total Fees */
+.shopify-calc-total {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 3px solid #E5E7EB;
+}
+
+.shopify-calc-plan.best-value .shopify-calc-total {
+    border-top-color: #10B981;
+}
+
+.shopify-calc-total-label {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #374151;
+}
+
+.shopify-calc-total-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #5C6AC4;
+}
+
+.shopify-calc-plan.best-value .shopify-calc-total-value {
+    color: #10B981;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .shopify-calc-plans {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .shopify-calc-plan {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .shopify-calc-wrapper {
+        margin: 1rem;
+        border-radius: 12px;
+    }
+
+    .shopify-calc-header {
+        padding: 1.5rem;
+    }
+
+    .shopify-calc-title {
+        font-size: 1.5rem;
+    }
+
+    .shopify-calc-subtitle {
+        font-size: 0.875rem;
+    }
+
+    .shopify-calc-inputs,
+    .shopify-calc-results {
+        padding: 1.5rem;
+    }
+
+    .shopify-calc-section {
+        padding: 1.25rem;
+    }
+
+    .shopify-calc-radio-group {
+        flex-direction: column;
+    }
+
+    .shopify-calc-radio-label {
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .shopify-calc-title {
+        font-size: 1.25rem;
+    }
+
+    .shopify-calc-plan-name {
+        font-size: 1.125rem;
+    }
+
+    .shopify-calc-total-value {
+        font-size: 1.25rem;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .shopify-calc-radio-label,
+    .shopify-calc-checkbox-label,
+    .shopify-calc-input-wrapper,
+    .shopify-calc-plan {
+        transition: none;
+    }
+}
+
+/* Hide number input spinners */
+.shopify-calc-input[type="number"]::-webkit-outer-spin-button,
+.shopify-calc-input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.shopify-calc-input[type="number"] {
+    -moz-appearance: textfield;
+}

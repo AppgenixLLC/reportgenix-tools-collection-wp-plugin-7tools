@@ -3,7 +3,7 @@
  * Plugin Name: ReportGenix Tools Collection
  * Plugin URI: https://reportgenix.com
  * Description: A collection of professional business calculators including Conversion Rate Calculator and ROI Calculator. Use shortcodes to display tools on any page.
- * Version: 2.0.0
+ * Version: 2.1.0
  * Author: ReportGenix
  * Author URI: https://reportgenix.com
  * License: GPL v2 or later
@@ -26,7 +26,7 @@ class ReportGenix_Tools_Collection {
     /**
      * Plugin version
      */
-    const VERSION = '2.0.0';
+    const VERSION = '2.1.0';
 
     /**
      * Plugin directory path
@@ -53,6 +53,9 @@ class ReportGenix_Tools_Collection {
         add_shortcode('clv_calculator', array($this, 'render_clv_calculator'));
         add_shortcode('sku_generator', array($this, 'render_sku_generator'));
         add_shortcode('utm_builder', array($this, 'render_utm_builder'));
+        add_shortcode('gross_profit_calculator', array($this, 'render_gross_profit_calculator'));
+        add_shortcode('pod_profit_calculator', array($this, 'render_pod_profit_calculator'));
+        add_shortcode('shopify_fee_calculator', array($this, 'render_shopify_fee_calculator'));
 
         // Enqueue assets
         add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
@@ -197,6 +200,63 @@ class ReportGenix_Tools_Collection {
             wp_enqueue_script(
                 'utm-builder-script',
                 $this->plugin_url . 'assets/js/utm-builder.js',
+                array(),
+                self::VERSION,
+                true
+            );
+        }
+
+        // Enqueue Gross Profit Calculator assets
+        if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'gross_profit_calculator')) {
+            wp_enqueue_style(
+                'gross-profit-calculator-style',
+                $this->plugin_url . 'assets/css/gross-profit-calculator.css',
+                array(),
+                self::VERSION,
+                'all'
+            );
+
+            wp_enqueue_script(
+                'gross-profit-calculator-script',
+                $this->plugin_url . 'assets/js/gross-profit-calculator.js',
+                array(),
+                self::VERSION,
+                true
+            );
+        }
+
+        // Enqueue POD Profit Calculator assets
+        if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'pod_profit_calculator')) {
+            wp_enqueue_style(
+                'pod-profit-calculator-style',
+                $this->plugin_url . 'assets/css/pod-profit-calculator.css',
+                array(),
+                self::VERSION,
+                'all'
+            );
+
+            wp_enqueue_script(
+                'pod-profit-calculator-script',
+                $this->plugin_url . 'assets/js/pod-profit-calculator.js',
+                array(),
+                self::VERSION,
+                true
+            );
+        }
+
+        // Enqueue Shopify Fee Calculator assets
+        if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'shopify_fee_calculator')) {
+            wp_enqueue_style(
+                'shopify-fee-calculator-style',
+                $this->plugin_url . 'assets/css/shopify-fee-calculator.css',
+                array(),
+                self::VERSION,
+                'all'
+            );
+
+            wp_enqueue_script(
+                'shopify-fee-calculator-script',
+                $this->plugin_url . 'assets/js/shopify-fee-calculator.js',
                 array(),
                 self::VERSION,
                 true
@@ -1978,6 +2038,705 @@ class ReportGenix_Tools_Collection {
     }
 
     /**
+     * Render Gross Profit Calculator shortcode
+     *
+     * @param array $atts Shortcode attributes
+     * @return string HTML output
+     */
+    public function render_gross_profit_calculator($atts) {
+        // Parse shortcode attributes
+        $atts = shortcode_atts(array(
+            'title' => 'Gross Profit Calculator',
+            'subtitle' => 'Calculate your gross profit and margin in real-time.',
+            'currency' => '$',
+            'max_items' => '1000',
+            'primary_color' => '#4F46E5',
+            'profit_color' => '#10B981',
+        ), $atts, 'gross_profit_calculator');
+
+        // Sanitize attributes
+        $title = sanitize_text_field($atts['title']);
+        $subtitle = sanitize_text_field($atts['subtitle']);
+        $currency = sanitize_text_field($atts['currency']);
+        $max_items = intval($atts['max_items']);
+        $primary_color = sanitize_hex_color($atts['primary_color']);
+        $profit_color = sanitize_hex_color($atts['profit_color']);
+
+        // Ensure valid ranges
+        if ($max_items < 1) $max_items = 1;
+        if ($max_items > 10000) $max_items = 10000;
+        if (!$primary_color) $primary_color = '#4F46E5';
+        if (!$profit_color) $profit_color = '#10B981';
+
+        // Generate unique ID for this calculator instance
+        $unique_id = 'gpc_' . uniqid();
+
+        // Start output buffering
+        ob_start();
+        ?>
+
+        <div class="gpc-wrapper"
+             id="<?php echo esc_attr($unique_id); ?>"
+             data-currency="<?php echo esc_attr($currency); ?>"
+             data-max-items="<?php echo esc_attr($max_items); ?>"
+             data-primary-color="<?php echo esc_attr($primary_color); ?>"
+             data-profit-color="<?php echo esc_attr($profit_color); ?>">
+
+            <!-- Header -->
+            <div class="gpc-header">
+                <h2 class="gpc-title"><?php echo esc_html($title); ?></h2>
+                <?php if ($subtitle) : ?>
+                <p class="gpc-subtitle"><?php echo esc_html($subtitle); ?></p>
+                <?php endif; ?>
+            </div>
+
+            <!-- Input Form -->
+            <div class="gpc-form">
+
+                <!-- Sales Price -->
+                <div class="gpc-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-sales-price">
+                        Sales Price (per unit):
+                    </label>
+                    <div class="gpc-input-wrapper">
+                        <span class="gpc-currency-prefix"><?php echo esc_html($currency); ?></span>
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="<?php echo esc_attr($unique_id); ?>-sales-price"
+                            class="gpc-input gpc-sales-price"
+                            placeholder="0.00"
+                            aria-label="Sales price per unit"
+                            aria-describedby="<?php echo esc_attr($unique_id); ?>-sales-price-help"
+                        >
+                    </div>
+                    <p class="gpc-helper-text" id="<?php echo esc_attr($unique_id); ?>-sales-price-help">
+                        The price you sell each unit for
+                    </p>
+                </div>
+
+                <!-- COGS -->
+                <div class="gpc-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-cogs">
+                        COGS - Cost of Goods Sold (per unit):
+                    </label>
+                    <div class="gpc-input-wrapper">
+                        <span class="gpc-currency-prefix"><?php echo esc_html($currency); ?></span>
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="<?php echo esc_attr($unique_id); ?>-cogs"
+                            class="gpc-input gpc-cogs"
+                            placeholder="0.00"
+                            aria-label="Cost of goods sold per unit"
+                            aria-describedby="<?php echo esc_attr($unique_id); ?>-cogs-help"
+                        >
+                    </div>
+                    <p class="gpc-helper-text" id="<?php echo esc_attr($unique_id); ?>-cogs-help">
+                        The cost to produce or purchase each unit
+                    </p>
+                </div>
+
+                <!-- Items Sold -->
+                <div class="gpc-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-items">
+                        Items Sold:
+                    </label>
+                    <div class="gpc-slider-wrapper">
+                        <input
+                            type="range"
+                            id="<?php echo esc_attr($unique_id); ?>-items-slider"
+                            class="gpc-slider"
+                            min="1"
+                            max="<?php echo esc_attr($max_items); ?>"
+                            value="100"
+                            aria-label="Number of items sold"
+                            aria-describedby="<?php echo esc_attr($unique_id); ?>-items-help"
+                        >
+                        <input
+                            type="number"
+                            id="<?php echo esc_attr($unique_id); ?>-items"
+                            class="gpc-number-input"
+                            min="1"
+                            max="<?php echo esc_attr($max_items); ?>"
+                            value="100"
+                            aria-label="Number of items sold (numeric input)"
+                        >
+                    </div>
+                    <p class="gpc-helper-text" id="<?php echo esc_attr($unique_id); ?>-items-help">
+                        Total number of units sold (1-<?php echo esc_html($max_items); ?>)
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Results Section -->
+            <div class="gpc-results">
+
+                <!-- Gross Profit Card -->
+                <div class="gpc-result-card gpc-profit-card">
+                    <div class="gpc-result-label">
+                        <span class="gpc-result-icon">💰</span>
+                        Gross Profit
+                    </div>
+                    <div class="gpc-result-value" id="<?php echo esc_attr($unique_id); ?>-profit-value">
+                        <?php echo esc_html($currency); ?>0.00
+                    </div>
+                    <div class="gpc-result-formula">
+                        (Sales Price - COGS) × Items Sold
+                    </div>
+                </div>
+
+                <!-- Gross Profit Margin Card -->
+                <div class="gpc-result-card gpc-margin-card">
+                    <div class="gpc-result-label">
+                        <span class="gpc-result-icon">📊</span>
+                        Gross Profit Margin
+                    </div>
+                    <div class="gpc-result-value" id="<?php echo esc_attr($unique_id); ?>-margin-value">
+                        0.00%
+                    </div>
+                    <div class="gpc-result-formula">
+                        ((Sales Price - COGS) / Sales Price) × 100
+                    </div>
+                    <div class="gpc-margin-indicator" id="<?php echo esc_attr($unique_id); ?>-margin-indicator">
+                        <div class="gpc-indicator-bar">
+                            <div class="gpc-indicator-fill" id="<?php echo esc_attr($unique_id); ?>-indicator-fill"></div>
+                        </div>
+                        <div class="gpc-indicator-label" id="<?php echo esc_attr($unique_id); ?>-indicator-label">
+                            Enter values to calculate
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Info Section -->
+            <div class="gpc-info">
+                <h4>Understanding Your Results:</h4>
+                <ul>
+                    <li><strong>Gross Profit:</strong> The total profit before operating expenses</li>
+                    <li><strong>Gross Margin:</strong> Profitability as a percentage of sales</li>
+                    <li><strong>Good Margin:</strong> &gt;50% (Excellent), 30-50% (Good), 20-30% (Fair), &lt;20% (Low)</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
+     * Render POD Profit Calculator shortcode
+     *
+     * @param array $atts Shortcode attributes
+     * @return string HTML output
+     */
+    public function render_pod_profit_calculator($atts) {
+        // Parse shortcode attributes
+        $atts = shortcode_atts(array(
+            'title' => 'POD Profit Calculator',
+            'subtitle' => 'Calculate your Print on Demand profits with detailed cost breakdown.',
+            'currency' => '$',
+            'primary_color' => '#4F46E5',
+            'profit_color' => '#10B981',
+            'loss_color' => '#EF4444',
+        ), $atts, 'pod_profit_calculator');
+
+        // Sanitize attributes
+        $title = sanitize_text_field($atts['title']);
+        $subtitle = sanitize_text_field($atts['subtitle']);
+        $currency = sanitize_text_field($atts['currency']);
+        $primary_color = sanitize_hex_color($atts['primary_color']);
+        $profit_color = sanitize_hex_color($atts['profit_color']);
+        $loss_color = sanitize_hex_color($atts['loss_color']);
+
+        // Set defaults if sanitization fails
+        if (!$primary_color) $primary_color = '#4F46E5';
+        if (!$profit_color) $profit_color = '#10B981';
+        if (!$loss_color) $loss_color = '#EF4444';
+
+        // Generate unique ID for this calculator instance
+        $unique_id = 'podpc_' . uniqid();
+
+        // Start output buffering
+        ob_start();
+        ?>
+
+        <div class="podpc-wrapper"
+             id="<?php echo esc_attr($unique_id); ?>"
+             data-currency="<?php echo esc_attr($currency); ?>"
+             data-primary-color="<?php echo esc_attr($primary_color); ?>"
+             data-profit-color="<?php echo esc_attr($profit_color); ?>"
+             data-loss-color="<?php echo esc_attr($loss_color); ?>">
+
+            <!-- Header -->
+            <div class="podpc-header">
+                <h2 class="podpc-title"><?php echo esc_html($title); ?></h2>
+                <?php if ($subtitle) : ?>
+                <p class="podpc-subtitle"><?php echo esc_html($subtitle); ?></p>
+                <?php endif; ?>
+            </div>
+
+            <!-- Input Form (2 columns on desktop) -->
+            <div class="podpc-form">
+
+                <!-- Selling Price -->
+                <div class="podpc-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-selling-price">
+                        <span class="podpc-icon">💰</span>
+                        Selling Price Per Item:
+                    </label>
+                    <div class="podpc-input-wrapper">
+                        <span class="podpc-currency-prefix"><?php echo esc_html($currency); ?></span>
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="<?php echo esc_attr($unique_id); ?>-selling-price"
+                            class="podpc-input podpc-selling-price"
+                            placeholder="0.00"
+                            aria-label="Selling price per item"
+                        >
+                    </div>
+                </div>
+
+                <!-- Shipping Fees -->
+                <div class="podpc-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-shipping">
+                        <span class="podpc-icon">📦</span>
+                        Shipping Fees Per Item:
+                    </label>
+                    <div class="podpc-input-wrapper">
+                        <span class="podpc-currency-prefix"><?php echo esc_html($currency); ?></span>
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="<?php echo esc_attr($unique_id); ?>-shipping"
+                            class="podpc-input podpc-shipping"
+                            placeholder="0.00"
+                            aria-label="Shipping fees per item"
+                        >
+                    </div>
+                </div>
+
+                <!-- Items Sold -->
+                <div class="podpc-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-items">
+                        <span class="podpc-icon">🛒</span>
+                        Items Sold:
+                    </label>
+                    <input
+                        type="number"
+                        id="<?php echo esc_attr($unique_id); ?>-items"
+                        class="podpc-input podpc-items"
+                        min="1"
+                        value="1"
+                        aria-label="Number of items sold"
+                    >
+                </div>
+
+                <!-- Marketing Fees (CPA) -->
+                <div class="podpc-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-marketing">
+                        <span class="podpc-icon">📊</span>
+                        Marketing Fees Per Item (CPA):
+                    </label>
+                    <div class="podpc-input-wrapper">
+                        <span class="podpc-currency-prefix"><?php echo esc_html($currency); ?></span>
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="<?php echo esc_attr($unique_id); ?>-marketing"
+                            class="podpc-input podpc-marketing"
+                            placeholder="0.00"
+                            aria-label="Marketing fees per item"
+                        >
+                    </div>
+                </div>
+
+                <!-- Product Costs -->
+                <div class="podpc-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-product-costs">
+                        <span class="podpc-icon">🏷️</span>
+                        Product Costs Per Item:
+                    </label>
+                    <div class="podpc-input-wrapper">
+                        <span class="podpc-currency-prefix"><?php echo esc_html($currency); ?></span>
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="<?php echo esc_attr($unique_id); ?>-product-costs"
+                            class="podpc-input podpc-product-costs"
+                            placeholder="0.00"
+                            aria-label="Product costs per item"
+                        >
+                    </div>
+                </div>
+
+                <!-- Other Fees (Optional) -->
+                <div class="podpc-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-other-fees">
+                        <span class="podpc-icon">💳</span>
+                        Other Fees Per Item (optional):
+                    </label>
+                    <div class="podpc-input-wrapper">
+                        <span class="podpc-currency-prefix"><?php echo esc_html($currency); ?></span>
+                        <input
+                            type="text"
+                            inputmode="decimal"
+                            id="<?php echo esc_attr($unique_id); ?>-other-fees"
+                            class="podpc-input podpc-other-fees"
+                            placeholder="0.00"
+                            aria-label="Other fees per item"
+                        >
+                    </div>
+                    <p class="podpc-helper-text">Transaction fees, payment processing, etc.</p>
+                </div>
+
+            </div>
+
+            <!-- Results Section (2x2 Grid) -->
+            <div class="podpc-results">
+
+                <!-- Revenue Card -->
+                <div class="podpc-result-card podpc-revenue-card">
+                    <div class="podpc-result-label">
+                        <span class="podpc-result-icon">💵</span>
+                        Revenue
+                    </div>
+                    <div class="podpc-result-value" id="<?php echo esc_attr($unique_id); ?>-revenue">
+                        <?php echo esc_html($currency); ?>0.00
+                    </div>
+                    <div class="podpc-result-formula">
+                        Selling Price × Items Sold
+                    </div>
+                </div>
+
+                <!-- Total Costs Card -->
+                <div class="podpc-result-card podpc-costs-card">
+                    <div class="podpc-result-label">
+                        <span class="podpc-result-icon">💸</span>
+                        Total Costs
+                    </div>
+                    <div class="podpc-result-value" id="<?php echo esc_attr($unique_id); ?>-costs">
+                        <?php echo esc_html($currency); ?>0.00
+                    </div>
+                    <div class="podpc-result-formula">
+                        All Fees × Items Sold
+                    </div>
+                </div>
+
+                <!-- Net Profit Card -->
+                <div class="podpc-result-card podpc-profit-card">
+                    <div class="podpc-result-label">
+                        <span class="podpc-result-icon">🎯</span>
+                        Net Profit
+                    </div>
+                    <div class="podpc-result-value" id="<?php echo esc_attr($unique_id); ?>-profit">
+                        <?php echo esc_html($currency); ?>0.00
+                    </div>
+                    <div class="podpc-result-formula">
+                        Revenue - Total Costs
+                    </div>
+                </div>
+
+                <!-- Net Profit Margin Card -->
+                <div class="podpc-result-card podpc-margin-card">
+                    <div class="podpc-result-label">
+                        <span class="podpc-result-icon">📈</span>
+                        Net Profit Margin
+                    </div>
+                    <div class="podpc-result-value" id="<?php echo esc_attr($unique_id); ?>-margin">
+                        0.00%
+                    </div>
+                    <div class="podpc-result-formula">
+                        (Net Profit / Revenue) × 100
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Info Section -->
+            <div class="podpc-info">
+                <h4>💡 Understanding POD Costs:</h4>
+                <ul>
+                    <li><strong>Shipping Fees:</strong> Cost to ship each item to customer</li>
+                    <li><strong>Marketing Fees (CPA):</strong> Cost Per Acquisition - advertising spend per sale</li>
+                    <li><strong>Product Costs:</strong> Manufacturing, printing, and base product costs</li>
+                    <li><strong>Other Fees:</strong> Payment processing, platform fees, taxes</li>
+                    <li><strong>Target Margin:</strong> Aim for 20-30% net profit margin for sustainable POD business</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
+     * Render Shopify Fee Calculator shortcode
+     *
+     * @param array $atts Shortcode attributes
+     * @return string HTML output
+     */
+    public function render_shopify_fee_calculator($atts) {
+        // Parse shortcode attributes
+        $atts = shortcode_atts(array(
+            'title' => 'Shopify Fee Calculator',
+            'subtitle' => 'Compare payment processing fees across all Shopify plans.',
+
+            // Plan Prices
+            'basic_price' => '39',
+            'shopify_price' => '105',
+            'advanced_price' => '399',
+
+            // Shopify Payments Rates (percentage)
+            'basic_sp_percent' => '2.9',
+            'shopify_sp_percent' => '2.6',
+            'advanced_sp_percent' => '2.4',
+
+            // Shopify Payments Fixed Fees
+            'basic_sp_fixed' => '0.30',
+            'shopify_sp_fixed' => '0.30',
+            'advanced_sp_fixed' => '0.30',
+
+            // Transaction Fees (percentage) - when not using Shopify Payments
+            'basic_transaction_fee' => '2.0',
+            'shopify_transaction_fee' => '1.0',
+            'advanced_transaction_fee' => '0.5',
+
+            // PayPal Rates
+            'paypal_percent' => '2.9',
+            'paypal_fixed' => '0.30',
+        ), $atts, 'shopify_fee_calculator');
+
+        // Sanitize attributes
+        $title = sanitize_text_field($atts['title']);
+        $subtitle = sanitize_text_field($atts['subtitle']);
+
+        // Sanitize numeric values
+        $basic_price = floatval($atts['basic_price']);
+        $shopify_price = floatval($atts['shopify_price']);
+        $advanced_price = floatval($atts['advanced_price']);
+
+        $basic_sp_percent = floatval($atts['basic_sp_percent']);
+        $shopify_sp_percent = floatval($atts['shopify_sp_percent']);
+        $advanced_sp_percent = floatval($atts['advanced_sp_percent']);
+
+        $basic_sp_fixed = floatval($atts['basic_sp_fixed']);
+        $shopify_sp_fixed = floatval($atts['shopify_sp_fixed']);
+        $advanced_sp_fixed = floatval($atts['advanced_sp_fixed']);
+
+        $basic_transaction_fee = floatval($atts['basic_transaction_fee']);
+        $shopify_transaction_fee = floatval($atts['shopify_transaction_fee']);
+        $advanced_transaction_fee = floatval($atts['advanced_transaction_fee']);
+
+        $paypal_percent = floatval($atts['paypal_percent']);
+        $paypal_fixed = floatval($atts['paypal_fixed']);
+
+        // Generate unique ID for this calculator instance
+        $unique_id = 'shopify_' . uniqid();
+
+        // Start output buffering
+        ob_start();
+        ?>
+
+        <div class="shopify-calc-wrapper" id="<?php echo esc_attr($unique_id); ?>"
+             data-basic-price="<?php echo esc_attr($basic_price); ?>"
+             data-shopify-price="<?php echo esc_attr($shopify_price); ?>"
+             data-advanced-price="<?php echo esc_attr($advanced_price); ?>"
+             data-basic-sp-percent="<?php echo esc_attr($basic_sp_percent); ?>"
+             data-shopify-sp-percent="<?php echo esc_attr($shopify_sp_percent); ?>"
+             data-advanced-sp-percent="<?php echo esc_attr($advanced_sp_percent); ?>"
+             data-basic-sp-fixed="<?php echo esc_attr($basic_sp_fixed); ?>"
+             data-shopify-sp-fixed="<?php echo esc_attr($shopify_sp_fixed); ?>"
+             data-advanced-sp-fixed="<?php echo esc_attr($advanced_sp_fixed); ?>"
+             data-basic-transaction-fee="<?php echo esc_attr($basic_transaction_fee); ?>"
+             data-shopify-transaction-fee="<?php echo esc_attr($shopify_transaction_fee); ?>"
+             data-advanced-transaction-fee="<?php echo esc_attr($advanced_transaction_fee); ?>"
+             data-paypal-percent="<?php echo esc_attr($paypal_percent); ?>"
+             data-paypal-fixed="<?php echo esc_attr($paypal_fixed); ?>">
+
+            <!-- Header -->
+            <div class="shopify-calc-header">
+                <h2 class="shopify-calc-title"><?php echo esc_html($title); ?></h2>
+                <?php if ($subtitle) : ?>
+                <p class="shopify-calc-subtitle"><?php echo esc_html($subtitle); ?></p>
+                <?php endif; ?>
+            </div>
+
+            <!-- Input Section -->
+            <div class="shopify-calc-inputs">
+
+                <!-- Section 1: Time Period -->
+                <div class="shopify-calc-section">
+                    <h3 class="shopify-calc-section-title">
+                        <span class="shopify-calc-icon">📅</span>
+                        Time Period
+                    </h3>
+                    <div class="shopify-calc-radio-group">
+                        <label class="shopify-calc-radio-label">
+                            <input type="radio" name="period" id="monthly" value="monthly" checked>
+                            <span>Monthly</span>
+                        </label>
+                        <label class="shopify-calc-radio-label">
+                            <input type="radio" name="period" id="yearly" value="yearly">
+                            <span>Yearly</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Section 2: Payment Methods -->
+                <div class="shopify-calc-section">
+                    <h3 class="shopify-calc-section-title">
+                        <span class="shopify-calc-icon">💳</span>
+                        Payment Methods (Select All That Apply)
+                    </h3>
+                    <div class="shopify-calc-checkbox-group">
+                        <label class="shopify-calc-checkbox-label">
+                            <input type="checkbox" id="shopify-payments" checked>
+                            <span>Shopify Payments</span>
+                        </label>
+                        <label class="shopify-calc-checkbox-label">
+                            <input type="checkbox" id="paypal">
+                            <span>PayPal</span>
+                        </label>
+                        <label class="shopify-calc-checkbox-label">
+                            <input type="checkbox" id="other-gateway">
+                            <span>Other Payment Gateway</span>
+                        </label>
+                    </div>
+
+                    <!-- Other Gateway Details -->
+                    <div class="shopify-calc-other-gateway hidden">
+                        <div class="shopify-calc-field">
+                            <label for="gateway-percent">Gateway Percentage Fee:</label>
+                            <div class="shopify-calc-input-wrapper">
+                                <input
+                                    type="number"
+                                    id="gateway-percent"
+                                    class="shopify-calc-input"
+                                    step="0.1"
+                                    min="0"
+                                    placeholder="2.9"
+                                    value="2.9"
+                                >
+                                <span class="shopify-calc-percent-suffix">%</span>
+                            </div>
+                        </div>
+                        <div class="shopify-calc-field">
+                            <label for="gateway-fixed">Gateway Fixed Fee:</label>
+                            <div class="shopify-calc-input-wrapper">
+                                <span class="shopify-calc-currency-prefix">$</span>
+                                <input
+                                    type="text"
+                                    inputmode="decimal"
+                                    id="gateway-fixed"
+                                    class="shopify-calc-input"
+                                    placeholder="0.30"
+                                    value="0.30"
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Sales Information -->
+                <div class="shopify-calc-section">
+                    <h3 class="shopify-calc-section-title">
+                        <span class="shopify-calc-icon">💰</span>
+                        Sales Information
+                    </h3>
+                    <div class="shopify-calc-field">
+                        <label for="sales-value">Total Sales Value:</label>
+                        <div class="shopify-calc-input-wrapper">
+                            <span class="shopify-calc-currency-prefix">$</span>
+                            <input
+                                type="text"
+                                inputmode="decimal"
+                                id="sales-value"
+                                class="shopify-calc-input"
+                                placeholder="10000.00"
+                            >
+                        </div>
+                    </div>
+                    <div class="shopify-calc-field">
+                        <label for="transactions">Number of Transactions:</label>
+                        <input
+                            type="number"
+                            id="transactions"
+                            class="shopify-calc-input"
+                            min="1"
+                            placeholder="100"
+                        >
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Results Section -->
+            <div class="shopify-calc-results">
+                <h3 class="shopify-calc-results-title">💎 Plan Comparison</h3>
+
+                <div class="shopify-calc-plans">
+
+                    <!-- Basic Plan -->
+                    <div class="shopify-calc-plan">
+                        <div class="shopify-calc-plan-header">
+                            <h4 class="shopify-calc-plan-name">Basic</h4>
+                            <p class="shopify-calc-plan-price">$<?php echo number_format($basic_price, 0); ?>/month</p>
+                        </div>
+                        <div class="shopify-calc-fee-breakdown">
+                            <!-- Fees populated by JS -->
+                        </div>
+                        <div class="shopify-calc-total shopify-calc-fee-item">
+                            <span class="shopify-calc-total-label">Total Fees:</span>
+                            <span class="shopify-calc-total-value">$0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Shopify Plan -->
+                    <div class="shopify-calc-plan">
+                        <div class="shopify-calc-plan-header">
+                            <h4 class="shopify-calc-plan-name">Shopify</h4>
+                            <p class="shopify-calc-plan-price">$<?php echo number_format($shopify_price, 0); ?>/month</p>
+                        </div>
+                        <div class="shopify-calc-fee-breakdown">
+                            <!-- Fees populated by JS -->
+                        </div>
+                        <div class="shopify-calc-total shopify-calc-fee-item">
+                            <span class="shopify-calc-total-label">Total Fees:</span>
+                            <span class="shopify-calc-total-value">$0.00</span>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Plan -->
+                    <div class="shopify-calc-plan">
+                        <div class="shopify-calc-plan-header">
+                            <h4 class="shopify-calc-plan-name">Advanced</h4>
+                            <p class="shopify-calc-plan-price">$<?php echo number_format($advanced_price, 0); ?>/month</p>
+                        </div>
+                        <div class="shopify-calc-fee-breakdown">
+                            <!-- Fees populated by JS -->
+                        </div>
+                        <div class="shopify-calc-total shopify-calc-fee-item">
+                            <span class="shopify-calc-total-label">Total Fees:</span>
+                            <span class="shopify-calc-total-value">$0.00</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
      * Add admin menu
      */
     public function add_admin_menu() {
@@ -2211,6 +2970,21 @@ class ReportGenix_Tools_Collection {
                         <h4>UTM Builder</h4>
                         <p>Build UTM tracking URLs for campaigns with live preview and QR code generation.</p>
                         <code>[utm_builder]</code>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Gross Profit Calculator</h4>
+                        <p>Calculate gross profit and margin in real-time with visual indicators.</p>
+                        <code>[gross_profit_calculator]</code>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>POD Profit Calculator</h4>
+                        <p>Calculate print-on-demand profit margins with comprehensive cost analysis.</p>
+                        <code>[pod_profit_calculator]</code>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Shopify Fee Calculator</h4>
+                        <p>Compare payment processing fees across all Shopify plans with best value detection.</p>
+                        <code>[shopify_fee_calculator]</code>
                     </div>
                 </div>
             </div>
@@ -4002,6 +4776,779 @@ class ReportGenix_Tools_Collection {
                     <li><strong>Test Before Launch:</strong> Always test UTM links before sharing publicly</li>
                     <li><strong>Document Campaigns:</strong> Keep a spreadsheet of all UTM campaigns for reference</li>
                 </ul>
+            </div>
+
+            <!-- Gross Profit Calculator Documentation -->
+            <div class="crc-admin-section">
+                <h2>8. Gross Profit Calculator</h2>
+
+                <h3>Basic Usage</h3>
+                <p>To display the Gross Profit Calculator, use this shortcode:</p>
+
+                <div class="crc-shortcode-box">
+                    <code>[gross_profit_calculator]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[gross_profit_calculator]')">Copy</button>
+                </div>
+
+                <h3>Attributes</h3>
+                <p>Customize the Gross Profit Calculator using these attributes:</p>
+
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Description</th>
+                            <th>Default Value</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>title</code></td>
+                            <td>Custom title displayed above the calculator</td>
+                            <td>"Gross Profit Calculator"</td>
+                            <td><code>title="Calculate Your Profit"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>subtitle</code></td>
+                            <td>Subtitle text with description</td>
+                            <td>"Calculate your gross profit and margin in real-time."</td>
+                            <td><code>subtitle="Analyze profitability"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>currency</code></td>
+                            <td>Currency symbol to display</td>
+                            <td>$</td>
+                            <td><code>currency="€"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>max_items</code></td>
+                            <td>Maximum number of items for slider</td>
+                            <td>1000</td>
+                            <td><code>max_items="5000"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>primary_color</code></td>
+                            <td>Primary color for margins (hex format)</td>
+                            <td>#4F46E5</td>
+                            <td><code>primary_color="#7C3AED"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>profit_color</code></td>
+                            <td>Color for profit display (hex format)</td>
+                            <td>#10B981</td>
+                            <td><code>profit_color="#059669"</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Examples</h3>
+
+                <h3>Example 1: Basic Gross Profit Calculator</h3>
+                <div class="crc-shortcode-box">
+                    <code>[gross_profit_calculator]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[gross_profit_calculator]')">Copy</button>
+                </div>
+
+                <h3>Example 2: Custom Title and Currency</h3>
+                <div class="crc-shortcode-box">
+                    <code>[gross_profit_calculator title="Product Profitability Analysis" currency="€"]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[gross_profit_calculator title=&quot;Product Profitability Analysis&quot; currency=&quot;€&quot;]')">Copy</button>
+                </div>
+
+                <h3>Example 3: High Volume Sales</h3>
+                <div class="crc-shortcode-box">
+                    <code>[gross_profit_calculator max_items="10000" title="High Volume Calculator"]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[gross_profit_calculator max_items=&quot;10000&quot; title=&quot;High Volume Calculator&quot;]')">Copy</button>
+                </div>
+
+                <h3>Example 4: Custom Colors</h3>
+                <div class="crc-shortcode-box">
+                    <code>[gross_profit_calculator primary_color="#7C3AED" profit_color="#059669"]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[gross_profit_calculator primary_color=&quot;#7C3AED&quot; profit_color=&quot;#059669&quot;]')">Copy</button>
+                </div>
+
+                <h3>What It Calculates</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Formula</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Gross Profit</strong></td>
+                            <td>(Sales Price - COGS) × Items Sold</td>
+                            <td>Total profit before operating expenses</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Gross Profit Margin</strong></td>
+                            <td>((Sales Price - COGS) / Sales Price) × 100</td>
+                            <td>Profitability as a percentage of sales</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Key Features</h3>
+                <div class="crc-feature-grid">
+                    <div class="crc-feature-item">
+                        <h4>Real-Time Calculations</h4>
+                        <p>Results update instantly as you type - no submit button needed.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Synced Slider & Input</h4>
+                        <p>Range slider and number input stay perfectly synchronized.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Currency Formatting</h4>
+                        <p>Automatic currency formatting with thousand separators.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Visual Margin Indicator</h4>
+                        <p>Color-coded progress bar shows margin quality (Low, Fair, Good, Excellent).</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Negative Value Handling</h4>
+                        <p>Automatically detects losses and displays them in red with warning.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Mobile Responsive</h4>
+                        <p>Optimized for all screen sizes - mobile, tablet, and desktop.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Custom Branding</h4>
+                        <p>Customize colors to match your brand identity.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Educational Info</h4>
+                        <p>Built-in guide explains margin benchmarks and what they mean.</p>
+                    </div>
+                </div>
+
+                <h3>Margin Interpretation Guide</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Margin Range</th>
+                            <th>Rating</th>
+                            <th>Indicator Color</th>
+                            <th>Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>&lt; 0%</td>
+                            <td>Loss</td>
+                            <td style="color: #EF4444;">🔴 Red</td>
+                            <td>Review your pricing immediately</td>
+                        </tr>
+                        <tr>
+                            <td>0-20%</td>
+                            <td>Low Margin</td>
+                            <td style="color: #EF4444;">🟠 Orange</td>
+                            <td>Consider cost optimization</td>
+                        </tr>
+                        <tr>
+                            <td>20-30%</td>
+                            <td>Fair Margin</td>
+                            <td style="color: #F59E0B;">🟡 Yellow</td>
+                            <td>Room for improvement</td>
+                        </tr>
+                        <tr>
+                            <td>30-50%</td>
+                            <td>Good Margin</td>
+                            <td style="color: #10B981;">🟢 Green</td>
+                            <td>Strong profitability</td>
+                        </tr>
+                        <tr>
+                            <td>&gt; 50%</td>
+                            <td>Excellent Margin</td>
+                            <td style="color: #059669;">🟢 Dark Green</td>
+                            <td>Outstanding performance!</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Use Cases</h3>
+                <ul>
+                    <li><strong>E-commerce Stores:</strong> Calculate profitability for individual products</li>
+                    <li><strong>Retail Businesses:</strong> Analyze margins across different product categories</li>
+                    <li><strong>Wholesale Operations:</strong> Determine optimal pricing strategies</li>
+                    <li><strong>Manufacturing:</strong> Assess cost structures and pricing models</li>
+                    <li><strong>Service Providers:</strong> Calculate service delivery profitability</li>
+                    <li><strong>Restaurants & Cafes:</strong> Analyze menu item profitability</li>
+                    <li><strong>Drop Shipping:</strong> Quick margin calculations for product sourcing</li>
+                    <li><strong>Financial Planning:</strong> Teach profit margin concepts to clients</li>
+                    <li><strong>Business Consultants:</strong> Demonstrate profitability analysis to clients</li>
+                    <li><strong>Sales Teams:</strong> Calculate deal profitability during negotiations</li>
+                </ul>
+
+                <h3>Best Practices</h3>
+                <ul>
+                    <li><strong>Include All Costs:</strong> Ensure COGS includes materials, labor, and overhead</li>
+                    <li><strong>Target 40%+ Margins:</strong> Aim for healthy margins to cover operating expenses</li>
+                    <li><strong>Compare by Category:</strong> Different products can have different margin expectations</li>
+                    <li><strong>Monitor Regularly:</strong> Track margins over time to spot trends</li>
+                    <li><strong>Factor in Discounts:</strong> Use average selling price, not list price</li>
+                    <li><strong>Consider Volume:</strong> Higher volumes can sometimes justify lower margins</li>
+                    <li><strong>Account for Returns:</strong> Factor return rates into your calculations</li>
+                    <li><strong>Review Suppliers:</strong> Regularly negotiate COGS with suppliers</li>
+                </ul>
+
+                <h3>Technical Features</h3>
+                <ul>
+                    <li><strong>Input Validation:</strong> Prevents invalid entries (negative numbers, letters)</li>
+                    <li><strong>Zero Division Handling:</strong> Gracefully handles edge cases</li>
+                    <li><strong>Decimal Precision:</strong> Displays values with 2 decimal places</li>
+                    <li><strong>Number Formatting:</strong> Adds thousand separators for readability</li>
+                    <li><strong>Slider Range:</strong> Configurable maximum items (1-10,000)</li>
+                    <li><strong>Accessibility:</strong> ARIA labels for screen readers</li>
+                    <li><strong>Custom Colors:</strong> Full color customization support</li>
+                    <li><strong>Multiple Currencies:</strong> Display any currency symbol</li>
+                </ul>
+            </div>
+
+            <!-- POD Profit Calculator Documentation -->
+            <div class="crc-admin-section">
+                <h2>9. POD Profit Calculator (Print on Demand)</h2>
+
+                <h3>Basic Usage</h3>
+                <p>To display the POD Profit Calculator, use this shortcode:</p>
+
+                <div class="crc-shortcode-box">
+                    <code>[pod_profit_calculator]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[pod_profit_calculator]')">Copy</button>
+                </div>
+
+                <h3>Attributes</h3>
+                <p>Customize the POD Profit Calculator using these attributes:</p>
+
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Description</th>
+                            <th>Default Value</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>title</code></td>
+                            <td>Custom title displayed above the calculator</td>
+                            <td>"POD Profit Calculator"</td>
+                            <td><code>title="Calculate POD Profits"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>subtitle</code></td>
+                            <td>Subtitle text with description</td>
+                            <td>"Calculate your print-on-demand profit margins with precision."</td>
+                            <td><code>subtitle="Analyze POD profitability"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>currency</code></td>
+                            <td>Currency symbol to display</td>
+                            <td>$</td>
+                            <td><code>currency="€"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>primary_color</code></td>
+                            <td>Primary color for input focus (hex format)</td>
+                            <td>#4F46E5</td>
+                            <td><code>primary_color="#7C3AED"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>profit_color</code></td>
+                            <td>Color for positive profit display (hex format)</td>
+                            <td>#10B981</td>
+                            <td><code>profit_color="#059669"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>loss_color</code></td>
+                            <td>Color for negative profit/loss display (hex format)</td>
+                            <td>#EF4444</td>
+                            <td><code>loss_color="#DC2626"</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Examples</h3>
+
+                <h3>Example 1: Basic POD Calculator</h3>
+                <div class="crc-shortcode-box">
+                    <code>[pod_profit_calculator]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[pod_profit_calculator]')">Copy</button>
+                </div>
+
+                <h3>Example 2: Custom Title and Currency</h3>
+                <div class="crc-shortcode-box">
+                    <code>[pod_profit_calculator title="T-Shirt Profit Analysis" currency="£"]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[pod_profit_calculator title=&quot;T-Shirt Profit Analysis&quot; currency=&quot;£&quot;]')">Copy</button>
+                </div>
+
+                <h3>Example 3: Custom Colors</h3>
+                <div class="crc-shortcode-box">
+                    <code>[pod_profit_calculator primary_color="#7C3AED" profit_color="#059669" loss_color="#DC2626"]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[pod_profit_calculator primary_color=&quot;#7C3AED&quot; profit_color=&quot;#059669&quot; loss_color=&quot;#DC2626&quot;]')">Copy</button>
+                </div>
+
+                <h3>What It Calculates</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Formula</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Revenue</strong></td>
+                            <td>Selling Price × Items Sold</td>
+                            <td>Total income from sales</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total Costs</strong></td>
+                            <td>(Shipping + Marketing + Product Costs + Other Fees) × Items</td>
+                            <td>All expenses per item × quantity sold</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Net Profit</strong></td>
+                            <td>Revenue - Total Costs</td>
+                            <td>Actual profit after all expenses</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Net Profit Margin</strong></td>
+                            <td>(Net Profit / Revenue) × 100</td>
+                            <td>Profitability as percentage of revenue</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Input Fields</h3>
+                <ul>
+                    <li><strong>Selling Price:</strong> The price you charge customers per item</li>
+                    <li><strong>Shipping Fees:</strong> Shipping cost per item (to customer)</li>
+                    <li><strong>Items Sold:</strong> Number of units sold</li>
+                    <li><strong>Marketing Fees (CPA):</strong> Cost per acquisition - ad spend per item sold</li>
+                    <li><strong>Product Costs:</strong> Base cost from POD provider (production + fulfillment)</li>
+                    <li><strong>Other Fees:</strong> Platform fees, transaction fees, taxes, etc.</li>
+                </ul>
+
+                <h3>Key Features</h3>
+                <div class="crc-feature-grid">
+                    <div class="crc-feature-item">
+                        <h4>Real-Time Calculations</h4>
+                        <p>All metrics update instantly as you type - no submit button needed.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>2x2 Results Grid</h4>
+                        <p>Four key metrics displayed in an organized grid layout.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Negative Profit Detection</h4>
+                        <p>Automatically highlights losses in red when profit is negative.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Currency Formatting</h4>
+                        <p>Professional currency formatting with thousand separators.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>2-Column Input Layout</h4>
+                        <p>Desktop-optimized 2-column form, stacks to 1 column on mobile.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Color-Coded Results</h4>
+                        <p>Revenue (blue), Costs (amber), Profit (green/red), Margin (indigo).</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Mobile Responsive</h4>
+                        <p>Fully responsive design optimized for all screen sizes.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Custom Branding</h4>
+                        <p>Customize colors to match your brand identity.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Info Section</h4>
+                        <p>Built-in tips for understanding and improving profit margins.</p>
+                    </div>
+                </div>
+
+                <h3>Profit Margin Interpretation</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Margin Range</th>
+                            <th>Assessment</th>
+                            <th>Recommendation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>&lt; 0%</td>
+                            <td>Loss - Losing money on each sale</td>
+                            <td>Review all costs and increase pricing immediately</td>
+                        </tr>
+                        <tr>
+                            <td>0-15%</td>
+                            <td>Very Low Margin - Barely profitable</td>
+                            <td>Reduce costs or increase prices to improve sustainability</td>
+                        </tr>
+                        <tr>
+                            <td>15-25%</td>
+                            <td>Low Margin - Minimal profit</td>
+                            <td>Look for ways to optimize costs and marketing efficiency</td>
+                        </tr>
+                        <tr>
+                            <td>25-40%</td>
+                            <td>Good Margin - Healthy profitability</td>
+                            <td>Standard for POD business, maintain and scale</td>
+                        </tr>
+                        <tr>
+                            <td>&gt; 40%</td>
+                            <td>Excellent Margin - Strong profitability</td>
+                            <td>Outstanding performance, consider reinvesting in growth</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Use Cases</h3>
+                <ul>
+                    <li><strong>POD Sellers:</strong> Calculate profits for t-shirts, mugs, posters, etc.</li>
+                    <li><strong>Etsy Stores:</strong> Factor in platform fees and shipping costs</li>
+                    <li><strong>Amazon Merch:</strong> Analyze profitability across different products</li>
+                    <li><strong>Redbubble Artists:</strong> Understand margins for different product types</li>
+                    <li><strong>Shopify POD:</strong> Calculate true profit after all fees</li>
+                    <li><strong>Marketing Analysis:</strong> Determine sustainable CPA for ad campaigns</li>
+                    <li><strong>Product Selection:</strong> Compare profitability of different POD products</li>
+                    <li><strong>Pricing Strategy:</strong> Find optimal price points for maximum profit</li>
+                </ul>
+
+                <h3>Best Practices</h3>
+                <ul>
+                    <li><strong>Include ALL Costs:</strong> Don't forget platform fees, transaction fees, and taxes</li>
+                    <li><strong>Target 30%+ Margins:</strong> POD businesses should aim for 30-40% margins</li>
+                    <li><strong>Track Marketing CPA:</strong> Know your true customer acquisition cost</li>
+                    <li><strong>Factor in Returns:</strong> Set aside 2-5% for returns and refunds</li>
+                    <li><strong>Test Products:</strong> Use calculator to validate new product ideas before launch</li>
+                    <li><strong>Monitor Suppliers:</strong> Compare POD providers for best base costs</li>
+                    <li><strong>Optimize Shipping:</strong> Negotiate better rates or pass costs to customers</li>
+                    <li><strong>Scale Wisely:</strong> Only scale products with proven healthy margins</li>
+                </ul>
+            </div>
+
+            <!-- Shopify Fee Calculator Documentation -->
+            <div class="crc-admin-section">
+                <h2>10. Shopify Fee Calculator</h2>
+
+                <h3>Basic Usage</h3>
+                <p>To display the Shopify Fee Calculator, use this shortcode:</p>
+
+                <div class="crc-shortcode-box">
+                    <code>[shopify_fee_calculator]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[shopify_fee_calculator]')">Copy</button>
+                </div>
+
+                <h3>Description</h3>
+                <p>The Shopify Fee Calculator helps you compare payment processing fees across all three Shopify plans (Basic, Shopify, and Advanced). It automatically calculates and highlights the most cost-effective plan based on your sales volume and payment methods.</p>
+
+                <h3>Attributes</h3>
+                <p>All pricing and fee rates are customizable via shortcode attributes, making it easy to update when Shopify changes their pricing:</p>
+
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Description</th>
+                            <th>Default Value</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4" style="background: #F3F4F6; font-weight: bold;">General Settings</td>
+                        </tr>
+                        <tr>
+                            <td><code>title</code></td>
+                            <td>Custom title displayed above calculator</td>
+                            <td>"Shopify Fee Calculator"</td>
+                            <td><code>title="Compare Shopify Plans"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>subtitle</code></td>
+                            <td>Subtitle text with description</td>
+                            <td>"Compare payment processing fees..."</td>
+                            <td><code>subtitle="Find your best plan"</code></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="background: #F3F4F6; font-weight: bold;">Plan Prices (Monthly)</td>
+                        </tr>
+                        <tr>
+                            <td><code>basic_price</code></td>
+                            <td>Basic plan monthly price</td>
+                            <td>39</td>
+                            <td><code>basic_price="42"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>shopify_price</code></td>
+                            <td>Shopify plan monthly price</td>
+                            <td>105</td>
+                            <td><code>shopify_price="108"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>advanced_price</code></td>
+                            <td>Advanced plan monthly price</td>
+                            <td>399</td>
+                            <td><code>advanced_price="399"</code></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="background: #F3F4F6; font-weight: bold;">Shopify Payments Rates (Percentage)</td>
+                        </tr>
+                        <tr>
+                            <td><code>basic_sp_percent</code></td>
+                            <td>Basic plan Shopify Payments rate (%)</td>
+                            <td>2.9</td>
+                            <td><code>basic_sp_percent="3.0"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>shopify_sp_percent</code></td>
+                            <td>Shopify plan Shopify Payments rate (%)</td>
+                            <td>2.6</td>
+                            <td><code>shopify_sp_percent="2.7"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>advanced_sp_percent</code></td>
+                            <td>Advanced plan Shopify Payments rate (%)</td>
+                            <td>2.4</td>
+                            <td><code>advanced_sp_percent="2.5"</code></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="background: #F3F4F6; font-weight: bold;">Shopify Payments Fixed Fees</td>
+                        </tr>
+                        <tr>
+                            <td><code>basic_sp_fixed</code></td>
+                            <td>Basic plan fixed fee per transaction</td>
+                            <td>0.30</td>
+                            <td><code>basic_sp_fixed="0.30"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>shopify_sp_fixed</code></td>
+                            <td>Shopify plan fixed fee per transaction</td>
+                            <td>0.30</td>
+                            <td><code>shopify_sp_fixed="0.30"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>advanced_sp_fixed</code></td>
+                            <td>Advanced plan fixed fee per transaction</td>
+                            <td>0.30</td>
+                            <td><code>advanced_sp_fixed="0.30"</code></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="background: #F3F4F6; font-weight: bold;">Transaction Fees (for Third-Party Gateways)</td>
+                        </tr>
+                        <tr>
+                            <td><code>basic_transaction_fee</code></td>
+                            <td>Basic plan transaction fee (%)</td>
+                            <td>2.0</td>
+                            <td><code>basic_transaction_fee="2.0"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>shopify_transaction_fee</code></td>
+                            <td>Shopify plan transaction fee (%)</td>
+                            <td>1.0</td>
+                            <td><code>shopify_transaction_fee="1.0"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>advanced_transaction_fee</code></td>
+                            <td>Advanced plan transaction fee (%)</td>
+                            <td>0.5</td>
+                            <td><code>advanced_transaction_fee="0.5"</code></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="background: #F3F4F6; font-weight: bold;">PayPal Rates</td>
+                        </tr>
+                        <tr>
+                            <td><code>paypal_percent</code></td>
+                            <td>PayPal percentage fee</td>
+                            <td>2.9</td>
+                            <td><code>paypal_percent="3.1"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>paypal_fixed</code></td>
+                            <td>PayPal fixed fee per transaction</td>
+                            <td>0.30</td>
+                            <td><code>paypal_fixed="0.35"</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Examples</h3>
+
+                <h3>Example 1: Basic Calculator with Default Rates</h3>
+                <div class="crc-shortcode-box">
+                    <code>[shopify_fee_calculator]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[shopify_fee_calculator]')">Copy</button>
+                </div>
+
+                <h3>Example 2: Updated 2026 Pricing</h3>
+                <div class="crc-shortcode-box">
+                    <code>[shopify_fee_calculator basic_price="42" shopify_price="108" advanced_price="399"]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[shopify_fee_calculator basic_price=&quot;42&quot; shopify_price=&quot;108&quot; advanced_price=&quot;399&quot;]')">Copy</button>
+                </div>
+
+                <h3>Example 3: Custom PayPal Rates</h3>
+                <div class="crc-shortcode-box">
+                    <code>[shopify_fee_calculator paypal_percent="3.1" paypal_fixed="0.35"]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[shopify_fee_calculator paypal_percent=&quot;3.1&quot; paypal_fixed=&quot;0.35&quot;]')">Copy</button>
+                </div>
+
+                <h3>Example 4: Full Custom Configuration</h3>
+                <div class="crc-shortcode-box">
+                    <code>[shopify_fee_calculator basic_price="42" basic_sp_percent="3.0" basic_transaction_fee="2.0" shopify_price="108" shopify_sp_percent="2.7" advanced_price="399"]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[shopify_fee_calculator basic_price=&quot;42&quot; basic_sp_percent=&quot;3.0&quot; basic_transaction_fee=&quot;2.0&quot; shopify_price=&quot;108&quot; shopify_sp_percent=&quot;2.7&quot; advanced_price=&quot;399&quot;]')">Copy</button>
+                </div>
+
+                <h3>How It Works</h3>
+                <ol>
+                    <li><strong>Select Time Period:</strong> Choose Monthly or Yearly calculations</li>
+                    <li><strong>Choose Payment Methods:</strong> Check Shopify Payments, PayPal, or Other Gateway</li>
+                    <li><strong>Enter Sales Data:</strong> Input monthly sales value and number of transactions</li>
+                    <li><strong>View Comparison:</strong> See fees calculated for all 3 plans side-by-side</li>
+                    <li><strong>Best Value Highlight:</strong> The most cost-effective plan is automatically highlighted in green</li>
+                </ol>
+
+                <h3>Key Features</h3>
+                <div class="crc-feature-grid">
+                    <div class="crc-feature-item">
+                        <h4>3-Plan Comparison</h4>
+                        <p>Compare Basic ($39), Shopify ($105), and Advanced ($399) plans side-by-side.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Multiple Payment Methods</h4>
+                        <p>Calculate fees for Shopify Payments, PayPal, and custom payment gateways.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Best Value Detection</h4>
+                        <p>Automatically highlights the most cost-effective plan with green border and badge.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Monthly/Yearly Toggle</h4>
+                        <p>Switch between monthly and annual calculations with one click.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Real-Time Updates</h4>
+                        <p>All calculations update instantly as you adjust inputs.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Fee Breakdown</h4>
+                        <p>See detailed breakdown of each fee type per plan.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Conditional Fields</h4>
+                        <p>Other Gateway section appears only when selected.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Fully Customizable</h4>
+                        <p>Update all pricing via shortcode attributes - no code changes needed.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Mobile Responsive</h4>
+                        <p>3-column layout on desktop stacks beautifully on mobile.</p>
+                    </div>
+                </div>
+
+                <h3>Fee Calculations</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Payment Method</th>
+                            <th>Fees Calculated</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Shopify Payments</strong></td>
+                            <td>(Sales × SP Rate%) + (Transactions × SP Fixed Fee)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PayPal</strong></td>
+                            <td>(Sales × PayPal Rate%) + (Transactions × PayPal Fixed) + (Sales × Transaction Fee%)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Other Gateway</strong></td>
+                            <td>(Sales × Gateway Rate%) + (Transactions × Gateway Fixed) + (Sales × Transaction Fee%)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Plan Selection Guide</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Plan</th>
+                            <th>Best For</th>
+                            <th>Key Benefits</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Basic ($39/mo)</strong></td>
+                            <td>New stores, low volume</td>
+                            <td>Low monthly fee, suitable for testing and starting out</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Shopify ($105/mo)</strong></td>
+                            <td>Growing stores, medium volume</td>
+                            <td>Lower processing fees (2.6%), better for $10k+/month in sales</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Advanced ($399/mo)</strong></td>
+                            <td>High-volume stores</td>
+                            <td>Lowest fees (2.4%), cost-effective above $50k+/month</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Use Cases</h3>
+                <ul>
+                    <li><strong>Store Planning:</strong> Determine which Shopify plan is most cost-effective for your volume</li>
+                    <li><strong>Plan Upgrades:</strong> Calculate when to upgrade from Basic to Shopify or Advanced</li>
+                    <li><strong>Payment Method Selection:</strong> Compare costs of Shopify Payments vs PayPal vs other gateways</li>
+                    <li><strong>Budget Forecasting:</strong> Project monthly/yearly payment processing costs</li>
+                    <li><strong>ROI Analysis:</strong> See if higher-tier plans pay for themselves in fee savings</li>
+                    <li><strong>Client Consulting:</strong> Help clients choose the right Shopify plan</li>
+                    <li><strong>Growth Planning:</strong> Model costs at different sales volumes</li>
+                    <li><strong>Multi-Gateway Strategy:</strong> Calculate costs when using multiple payment methods</li>
+                </ul>
+
+                <h3>Best Practices</h3>
+                <ul>
+                    <li><strong>Use Actual Data:</strong> Input your real monthly averages for accurate results</li>
+                    <li><strong>Consider Growth:</strong> Calculate for your expected volume in 3-6 months</li>
+                    <li><strong>Factor All Gateways:</strong> If you use multiple payment methods, calculate all of them</li>
+                    <li><strong>Check Yearly Savings:</strong> Use yearly toggle to see annual savings</li>
+                    <li><strong>Update Regularly:</strong> When Shopify updates rates, update shortcode attributes</li>
+                    <li><strong>Account for Peak Seasons:</strong> Use peak monthly volume for worst-case calculations</li>
+                    <li><strong>Compare Total Cost:</strong> Remember that plan subscription + fees = total cost</li>
+                    <li><strong>Break-Even Analysis:</strong> Calculate at what volume a higher plan becomes cheaper</li>
+                </ul>
+
+                <h3>Updating for New Shopify Pricing</h3>
+                <p>When Shopify updates their pricing or fee structure, simply update the shortcode attributes - no code changes needed:</p>
+                <pre style="background: #F3F4F6; padding: 1rem; border-radius: 8px; overflow-x: auto;">
+[shopify_fee_calculator
+    basic_price="NEW_PRICE"
+    basic_sp_percent="NEW_RATE"
+    shopify_price="NEW_PRICE"
+    shopify_sp_percent="NEW_RATE"
+    advanced_price="NEW_PRICE"
+    advanced_sp_percent="NEW_RATE"
+    paypal_percent="NEW_RATE"
+    paypal_fixed="NEW_FEE"]
+                </pre>
             </div>
 
             <!-- Support -->
