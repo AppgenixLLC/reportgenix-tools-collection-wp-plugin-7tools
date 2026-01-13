@@ -1,0 +1,296 @@
+/**
+ * Barcode Generator Styles
+ * Version: 1.0.0
+ */
+
+/* Main Wrapper */
+.barcode-gen-wrapper {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 0;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+}
+
+/* Header */
+.barcode-gen-header {
+    background: linear-gradient(135deg, #5C6AC4 0%, #7C84C7 100%);
+    padding: 2rem;
+    text-align: center;
+    color: white;
+}
+
+.barcode-gen-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: white;
+}
+
+.barcode-gen-subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+}
+
+/* Form Section */
+.barcode-gen-form {
+    padding: 2rem;
+}
+
+.barcode-gen-field {
+    margin-bottom: 1.5rem;
+}
+
+.barcode-gen-field:last-child {
+    margin-bottom: 0;
+}
+
+.barcode-gen-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.barcode-gen-field .barcode-gen-label-required {
+    color: #EF4444;
+    font-size: 0.875rem;
+    margin-left: 0.25rem;
+}
+
+/* Text Input */
+.barcode-gen-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #1F2937;
+    background: white;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.barcode-gen-input:focus {
+    outline: none;
+    border-color: #5C6AC4;
+    box-shadow: 0 0 0 3px rgba(92, 106, 196, 0.1);
+}
+
+.barcode-gen-input::placeholder {
+    color: #9CA3AF;
+}
+
+/* Select Dropdown */
+.barcode-gen-select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #1F2937;
+    background: white;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.barcode-gen-select:focus {
+    outline: none;
+    border-color: #5C6AC4;
+    box-shadow: 0 0 0 3px rgba(92, 106, 196, 0.1);
+}
+
+/* Error Message */
+.barcode-gen-error {
+    display: none;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #FEF2F2;
+    border: 2px solid #FCA5A5;
+    border-radius: 8px;
+    color: #DC2626;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.barcode-gen-error.active {
+    display: block;
+}
+
+/* Preview Section */
+.barcode-gen-preview {
+    padding: 2rem;
+    background: #F9FAFB;
+    border-top: 2px solid #E5E7EB;
+}
+
+.barcode-gen-preview-label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    color: #374151;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.barcode-gen-canvas-wrapper {
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 2rem;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.barcode-gen-canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+.barcode-gen-placeholder {
+    color: #9CA3AF;
+    font-size: 0.95rem;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Download Button */
+.barcode-gen-download {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: #10B981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.barcode-gen-download:hover:not(:disabled) {
+    background: #059669;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+    transform: translateY(-1px);
+}
+
+.barcode-gen-download:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.barcode-gen-download:disabled {
+    background: #D1D5DB;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Info Section */
+.barcode-gen-info {
+    padding: 1.5rem 2rem;
+    background: #EEF2FF;
+    border-top: 2px solid #C7D2FE;
+}
+
+.barcode-gen-info h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #3730A3;
+}
+
+.barcode-gen-info ul {
+    margin: 0;
+    padding: 0 0 0 1.25rem;
+    color: #4338CA;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.barcode-gen-info li {
+    margin-bottom: 0.5rem;
+}
+
+.barcode-gen-info li:last-child {
+    margin-bottom: 0;
+}
+
+.barcode-gen-info strong {
+    color: #3730A3;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .barcode-gen-wrapper {
+        margin: 1rem;
+        border-radius: 12px;
+    }
+
+    .barcode-gen-header {
+        padding: 1.5rem;
+    }
+
+    .barcode-gen-title {
+        font-size: 1.5rem;
+    }
+
+    .barcode-gen-subtitle {
+        font-size: 0.875rem;
+    }
+
+    .barcode-gen-form,
+    .barcode-gen-preview {
+        padding: 1.5rem;
+    }
+
+    .barcode-gen-canvas-wrapper {
+        padding: 1.5rem;
+    }
+
+    .barcode-gen-info {
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .barcode-gen-title {
+        font-size: 1.25rem;
+    }
+
+    .barcode-gen-canvas-wrapper {
+        padding: 1rem;
+    }
+
+    .barcode-gen-download {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .barcode-gen-input,
+    .barcode-gen-select,
+    .barcode-gen-download {
+        transition: none;
+    }
+}
+
+/* Focus visible for accessibility */
+.barcode-gen-input:focus-visible,
+.barcode-gen-select:focus-visible,
+.barcode-gen-download:focus-visible {
+    outline: 2px solid #5C6AC4;
+    outline-offset: 2px;
+}

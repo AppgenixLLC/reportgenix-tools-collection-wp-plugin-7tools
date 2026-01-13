@@ -1,0 +1,381 @@
+/**
+ * QR Code Generator Styles
+ * Version: 1.0.0
+ */
+
+/* Main Wrapper */
+.qr-gen-wrapper {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 0;
+    background: #FFFFFF;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+}
+
+/* Header */
+.qr-gen-header {
+    background: linear-gradient(135deg, #5C6AC4 0%, #7C84C7 100%);
+    padding: 2rem;
+    text-align: center;
+    color: white;
+}
+
+.qr-gen-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: white;
+}
+
+.qr-gen-subtitle {
+    margin: 0;
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 400;
+}
+
+/* Tab Navigation */
+.qr-gen-tabs {
+    display: flex;
+    background: #F9FAFB;
+    border-bottom: 2px solid #E5E7EB;
+    overflow-x: auto;
+}
+
+.qr-gen-tab {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #6B7280;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.qr-gen-tab:hover {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.qr-gen-tab.active {
+    color: #5C6AC4;
+    background: white;
+    border-bottom-color: #5C6AC4;
+}
+
+/* Form Section */
+.qr-gen-form {
+    padding: 2rem;
+}
+
+/* Tab Content Panels */
+.qr-gen-tab-content {
+    display: none;
+}
+
+.qr-gen-tab-content.active {
+    display: block;
+}
+
+.qr-gen-field {
+    margin-bottom: 1.5rem;
+}
+
+.qr-gen-field:last-child {
+    margin-bottom: 0;
+}
+
+.qr-gen-field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.qr-gen-field .qr-gen-label-required {
+    color: #EF4444;
+    font-size: 0.875rem;
+    margin-left: 0.25rem;
+}
+
+/* Text Inputs */
+.qr-gen-input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #1F2937;
+    background: white;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.qr-gen-input:focus {
+    outline: none;
+    border-color: #5C6AC4;
+    box-shadow: 0 0 0 3px rgba(92, 106, 196, 0.1);
+}
+
+.qr-gen-input::placeholder {
+    color: #9CA3AF;
+}
+
+/* Textarea */
+.qr-gen-textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.875rem 1rem;
+    border: 2px solid #E5E7EB;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #1F2937;
+    background: white;
+    transition: all 0.2s ease;
+    resize: vertical;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.qr-gen-textarea:focus {
+    outline: none;
+    border-color: #5C6AC4;
+    box-shadow: 0 0 0 3px rgba(92, 106, 196, 0.1);
+}
+
+.qr-gen-textarea::placeholder {
+    color: #9CA3AF;
+}
+
+/* SMS Fields Grid */
+.qr-gen-sms-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Error Message */
+.qr-gen-error {
+    display: none;
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #FEF2F2;
+    border: 2px solid #FCA5A5;
+    border-radius: 8px;
+    color: #DC2626;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.qr-gen-error.active {
+    display: block;
+}
+
+/* Preview Section */
+.qr-gen-preview {
+    padding: 2rem;
+    background: #F9FAFB;
+    border-top: 2px solid #E5E7EB;
+}
+
+.qr-gen-preview-label {
+    display: block;
+    margin-bottom: 1rem;
+    font-weight: 700;
+    color: #374151;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.qr-gen-qr-wrapper {
+    background: white;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 2rem;
+    min-height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.qr-gen-qr-container {
+    width: 200px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qr-gen-qr-container canvas,
+.qr-gen-qr-container img {
+    max-width: 100%;
+    height: auto;
+}
+
+.qr-gen-placeholder {
+    color: #9CA3AF;
+    font-size: 0.95rem;
+    font-style: italic;
+    text-align: center;
+}
+
+/* Download Button */
+.qr-gen-download {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: #10B981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.qr-gen-download:hover:not(:disabled) {
+    background: #059669;
+    box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+    transform: translateY(-1px);
+}
+
+.qr-gen-download:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.qr-gen-download:disabled {
+    background: #D1D5DB;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Info Section */
+.qr-gen-info {
+    padding: 1.5rem 2rem;
+    background: #EEF2FF;
+    border-top: 2px solid #C7D2FE;
+}
+
+.qr-gen-info h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #3730A3;
+}
+
+.qr-gen-info ul {
+    margin: 0;
+    padding: 0 0 0 1.25rem;
+    color: #4338CA;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+.qr-gen-info li {
+    margin-bottom: 0.5rem;
+}
+
+.qr-gen-info li:last-child {
+    margin-bottom: 0;
+}
+
+.qr-gen-info strong {
+    color: #3730A3;
+    font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .qr-gen-wrapper {
+        margin: 1rem;
+        border-radius: 12px;
+    }
+
+    .qr-gen-header {
+        padding: 1.5rem;
+    }
+
+    .qr-gen-title {
+        font-size: 1.5rem;
+    }
+
+    .qr-gen-subtitle {
+        font-size: 0.875rem;
+    }
+
+    .qr-gen-tabs {
+        flex-wrap: wrap;
+    }
+
+    .qr-gen-tab {
+        flex: 1 1 50%;
+        padding: 0.875rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .qr-gen-form,
+    .qr-gen-preview {
+        padding: 1.5rem;
+    }
+
+    .qr-gen-qr-wrapper {
+        padding: 1.5rem;
+    }
+
+    .qr-gen-info {
+        padding: 1.25rem 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .qr-gen-title {
+        font-size: 1.25rem;
+    }
+
+    .qr-gen-tab {
+        flex: 1 1 100%;
+    }
+
+    .qr-gen-qr-wrapper {
+        padding: 1rem;
+    }
+
+    .qr-gen-qr-container {
+        width: 180px;
+        height: 180px;
+    }
+
+    .qr-gen-download {
+        padding: 0.875rem 1.5rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .qr-gen-tab,
+    .qr-gen-input,
+    .qr-gen-textarea,
+    .qr-gen-download {
+        transition: none;
+    }
+}
+
+/* Focus visible for accessibility */
+.qr-gen-tab:focus-visible,
+.qr-gen-input:focus-visible,
+.qr-gen-textarea:focus-visible,
+.qr-gen-download:focus-visible {
+    outline: 2px solid #5C6AC4;
+    outline-offset: 2px;
+}

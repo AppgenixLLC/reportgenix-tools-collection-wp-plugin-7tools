@@ -3,7 +3,7 @@
  * Plugin Name: ReportGenix Tools Collection
  * Plugin URI: https://reportgenix.com
  * Description: A collection of professional business calculators including Conversion Rate Calculator and ROI Calculator. Use shortcodes to display tools on any page.
- * Version: 2.1.0
+ * Version: 2.2.0
  * Author: ReportGenix
  * Author URI: https://reportgenix.com
  * License: GPL v2 or later
@@ -26,7 +26,7 @@ class ReportGenix_Tools_Collection {
     /**
      * Plugin version
      */
-    const VERSION = '2.1.0';
+    const VERSION = '2.2.0';
 
     /**
      * Plugin directory path
@@ -56,6 +56,8 @@ class ReportGenix_Tools_Collection {
         add_shortcode('gross_profit_calculator', array($this, 'render_gross_profit_calculator'));
         add_shortcode('pod_profit_calculator', array($this, 'render_pod_profit_calculator'));
         add_shortcode('shopify_fee_calculator', array($this, 'render_shopify_fee_calculator'));
+        add_shortcode('barcode_generator', array($this, 'render_barcode_generator'));
+        add_shortcode('qr_code_generator', array($this, 'render_qr_code_generator'));
 
         // Enqueue assets
         add_action('wp_enqueue_scripts', array($this, 'enqueue_assets'));
@@ -258,6 +260,62 @@ class ReportGenix_Tools_Collection {
                 'shopify-fee-calculator-script',
                 $this->plugin_url . 'assets/js/shopify-fee-calculator.js',
                 array(),
+                self::VERSION,
+                true
+            );
+        }
+
+        // Enqueue Barcode Generator assets
+        if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'barcode_generator')) {
+            // Enqueue JsBarcode library from CDN
+            wp_enqueue_script(
+                'jsbarcode',
+                'https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js',
+                array(),
+                '3.11.5',
+                true
+            );
+
+            wp_enqueue_style(
+                'barcode-generator-style',
+                $this->plugin_url . 'assets/css/barcode-generator.css',
+                array(),
+                self::VERSION,
+                'all'
+            );
+
+            wp_enqueue_script(
+                'barcode-generator-script',
+                $this->plugin_url . 'assets/js/barcode-generator.js',
+                array('jsbarcode'),
+                self::VERSION,
+                true
+            );
+        }
+
+        // Enqueue QR Code Generator assets
+        if (is_a($post, 'WP_Post') && has_shortcode($post->post_content, 'qr_code_generator')) {
+            // Enqueue QRCode.js library from CDN
+            wp_enqueue_script(
+                'qrcodejs',
+                'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
+                array(),
+                '1.0.0',
+                true
+            );
+
+            wp_enqueue_style(
+                'qr-code-generator-style',
+                $this->plugin_url . 'assets/css/qr-code-generator.css',
+                array(),
+                self::VERSION,
+                'all'
+            );
+
+            wp_enqueue_script(
+                'qr-code-generator-script',
+                $this->plugin_url . 'assets/js/qr-code-generator.js',
+                array('qrcodejs'),
                 self::VERSION,
                 true
             );
@@ -2737,6 +2795,275 @@ class ReportGenix_Tools_Collection {
     }
 
     /**
+     * Render Barcode Generator shortcode
+     *
+     * @param array $atts Shortcode attributes
+     * @return string HTML output
+     */
+    public function render_barcode_generator($atts) {
+        // Parse shortcode attributes
+        $atts = shortcode_atts(array(
+            'title' => 'Barcode Generator',
+            'subtitle' => 'Generate barcodes instantly with multiple format support.',
+        ), $atts, 'barcode_generator');
+
+        // Sanitize attributes
+        $title = sanitize_text_field($atts['title']);
+        $subtitle = sanitize_text_field($atts['subtitle']);
+
+        // Generate unique ID for this instance
+        $unique_id = 'barcode-gen-' . uniqid();
+
+        ob_start();
+        ?>
+
+        <div class="barcode-gen-wrapper" id="<?php echo esc_attr($unique_id); ?>">
+            <!-- Header -->
+            <div class="barcode-gen-header">
+                <h2 class="barcode-gen-title"><?php echo esc_html($title); ?></h2>
+                <p class="barcode-gen-subtitle"><?php echo esc_html($subtitle); ?></p>
+            </div>
+
+            <!-- Form -->
+            <div class="barcode-gen-form">
+                <!-- Barcode Data Input -->
+                <div class="barcode-gen-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-data">
+                        Barcode Data
+                        <span class="barcode-gen-label-required">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="<?php echo esc_attr($unique_id); ?>-data"
+                        class="barcode-gen-input barcode-gen-data-input"
+                        placeholder="Enter text or numbers..."
+                        autocomplete="off"
+                    />
+                </div>
+
+                <!-- Barcode Type Select -->
+                <div class="barcode-gen-field">
+                    <label for="<?php echo esc_attr($unique_id); ?>-type">
+                        Barcode Type
+                    </label>
+                    <select
+                        id="<?php echo esc_attr($unique_id); ?>-type"
+                        class="barcode-gen-select barcode-gen-type-select"
+                    >
+                        <option value="CODE128">CODE128 (Alphanumeric)</option>
+                        <option value="CODE39">CODE39 (A-Z, 0-9, Special)</option>
+                        <option value="EAN13">EAN13 (13 digits)</option>
+                        <option value="EAN8">EAN8 (8 digits)</option>
+                        <option value="UPC">UPC (12 digits)</option>
+                    </select>
+                </div>
+
+                <!-- Error Message -->
+                <div class="barcode-gen-error">
+                    Error message will appear here
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div class="barcode-gen-preview">
+                <label class="barcode-gen-preview-label">Barcode Preview</label>
+
+                <div class="barcode-gen-canvas-wrapper">
+                    <canvas class="barcode-gen-canvas"></canvas>
+                    <div class="barcode-gen-placeholder">
+                        Enter data to generate barcode
+                    </div>
+                </div>
+
+                <!-- Download Button -->
+                <button class="barcode-gen-download" disabled>
+                    Download as PNG
+                </button>
+            </div>
+
+            <!-- Info Section -->
+            <div class="barcode-gen-info">
+                <h4>Barcode Format Requirements:</h4>
+                <ul>
+                    <li><strong>CODE128:</strong> Any ASCII characters (most flexible)</li>
+                    <li><strong>CODE39:</strong> 0-9, A-Z, and symbols - . $ / + % space</li>
+                    <li><strong>EAN13:</strong> Exactly 13 digits (e.g., 5901234123457)</li>
+                    <li><strong>EAN8:</strong> Exactly 8 digits (e.g., 96385074)</li>
+                    <li><strong>UPC:</strong> Exactly 12 digits (e.g., 123456789012)</li>
+                </ul>
+            </div>
+        </div>
+
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
+     * Render QR Code Generator shortcode
+     *
+     * @param array $atts Shortcode attributes
+     * @return string HTML output
+     */
+    public function render_qr_code_generator($atts) {
+        // Parse shortcode attributes
+        $atts = shortcode_atts(array(
+            'title' => 'QR Code Generator',
+            'subtitle' => 'Create QR codes for websites, phone numbers, SMS, and text.',
+        ), $atts, 'qr_code_generator');
+
+        // Sanitize attributes
+        $title = sanitize_text_field($atts['title']);
+        $subtitle = sanitize_text_field($atts['subtitle']);
+
+        // Generate unique ID for this instance
+        $unique_id = 'qr-gen-' . uniqid();
+
+        ob_start();
+        ?>
+
+        <div class="qr-gen-wrapper" id="<?php echo esc_attr($unique_id); ?>">
+            <!-- Header -->
+            <div class="qr-gen-header">
+                <h2 class="qr-gen-title"><?php echo esc_html($title); ?></h2>
+                <p class="qr-gen-subtitle"><?php echo esc_html($subtitle); ?></p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="qr-gen-tabs">
+                <button class="qr-gen-tab active" data-type="url">Website URL</button>
+                <button class="qr-gen-tab" data-type="phone">Phone Number</button>
+                <button class="qr-gen-tab" data-type="sms">SMS</button>
+                <button class="qr-gen-tab" data-type="text">Plain Text</button>
+            </div>
+
+            <!-- Form -->
+            <div class="qr-gen-form">
+                <!-- Website URL Tab -->
+                <div class="qr-gen-tab-content active" data-content="url">
+                    <div class="qr-gen-field">
+                        <label for="<?php echo esc_attr($unique_id); ?>-url">
+                            Website URL
+                            <span class="qr-gen-label-required">*</span>
+                        </label>
+                        <input
+                            type="url"
+                            id="<?php echo esc_attr($unique_id); ?>-url"
+                            class="qr-gen-input qr-gen-url-input"
+                            placeholder="https://example.com"
+                            autocomplete="off"
+                        />
+                        <div class="qr-gen-error qr-gen-url-error">
+                            Error message will appear here
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone Number Tab -->
+                <div class="qr-gen-tab-content" data-content="phone">
+                    <div class="qr-gen-field">
+                        <label for="<?php echo esc_attr($unique_id); ?>-phone">
+                            Phone Number
+                            <span class="qr-gen-label-required">*</span>
+                        </label>
+                        <input
+                            type="tel"
+                            id="<?php echo esc_attr($unique_id); ?>-phone"
+                            class="qr-gen-input qr-gen-phone-input"
+                            placeholder="+1234567890"
+                            autocomplete="off"
+                        />
+                        <div class="qr-gen-error qr-gen-phone-error">
+                            Error message will appear here
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SMS Tab -->
+                <div class="qr-gen-tab-content" data-content="sms">
+                    <div class="qr-gen-sms-fields">
+                        <div class="qr-gen-field">
+                            <label for="<?php echo esc_attr($unique_id); ?>-sms-phone">
+                                Phone Number
+                                <span class="qr-gen-label-required">*</span>
+                            </label>
+                            <input
+                                type="tel"
+                                id="<?php echo esc_attr($unique_id); ?>-sms-phone"
+                                class="qr-gen-input qr-gen-sms-phone-input"
+                                placeholder="+1234567890"
+                                autocomplete="off"
+                            />
+                        </div>
+                        <div class="qr-gen-field">
+                            <label for="<?php echo esc_attr($unique_id); ?>-sms-message">
+                                Message
+                                <span class="qr-gen-label-required">*</span>
+                            </label>
+                            <textarea
+                                id="<?php echo esc_attr($unique_id); ?>-sms-message"
+                                class="qr-gen-textarea qr-gen-sms-message-input"
+                                placeholder="Enter your SMS message..."
+                            ></textarea>
+                        </div>
+                        <div class="qr-gen-error qr-gen-sms-error">
+                            Error message will appear here
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plain Text Tab -->
+                <div class="qr-gen-tab-content" data-content="text">
+                    <div class="qr-gen-field">
+                        <label for="<?php echo esc_attr($unique_id); ?>-text">
+                            Text
+                            <span class="qr-gen-label-required">*</span>
+                        </label>
+                        <textarea
+                            id="<?php echo esc_attr($unique_id); ?>-text"
+                            class="qr-gen-textarea qr-gen-text-input"
+                            placeholder="Enter any text..."
+                        ></textarea>
+                        <div class="qr-gen-error qr-gen-text-error">
+                            Error message will appear here
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Section -->
+            <div class="qr-gen-preview">
+                <label class="qr-gen-preview-label">QR Code Preview</label>
+
+                <div class="qr-gen-qr-wrapper">
+                    <div class="qr-gen-qr-container"></div>
+                    <div class="qr-gen-placeholder">
+                        Enter data to generate QR code
+                    </div>
+                </div>
+
+                <!-- Download Button -->
+                <button class="qr-gen-download" disabled>
+                    Download as PNG
+                </button>
+            </div>
+
+            <!-- Info Section -->
+            <div class="qr-gen-info">
+                <h4>QR Code Data Types:</h4>
+                <ul>
+                    <li><strong>Website URL:</strong> Must start with http:// or https://</li>
+                    <li><strong>Phone Number:</strong> Use international format (e.g., +1234567890)</li>
+                    <li><strong>SMS:</strong> Phone number + message (opens SMS app when scanned)</li>
+                    <li><strong>Plain Text:</strong> Any text content you want to encode</li>
+                </ul>
+            </div>
+        </div>
+
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
      * Add admin menu
      */
     public function add_admin_menu() {
@@ -2985,6 +3312,16 @@ class ReportGenix_Tools_Collection {
                         <h4>Shopify Fee Calculator</h4>
                         <p>Compare payment processing fees across all Shopify plans with best value detection.</p>
                         <code>[shopify_fee_calculator]</code>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Barcode Generator</h4>
+                        <p>Generate barcodes instantly with support for CODE128, CODE39, EAN13, EAN8, and UPC formats.</p>
+                        <code>[barcode_generator]</code>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>QR Code Generator</h4>
+                        <p>Create QR codes for websites, phone numbers, SMS, and text with real-time preview.</p>
+                        <code>[qr_code_generator]</code>
                     </div>
                 </div>
             </div>
@@ -5549,6 +5886,531 @@ class ReportGenix_Tools_Collection {
     paypal_percent="NEW_RATE"
     paypal_fixed="NEW_FEE"]
                 </pre>
+            </div>
+
+            <!-- Barcode Generator Documentation -->
+            <div class="crc-admin-section">
+                <h2>11. Barcode Generator</h2>
+
+                <h3>Basic Usage</h3>
+                <p>To display the Barcode Generator, use this shortcode:</p>
+
+                <div class="crc-shortcode-box">
+                    <code>[barcode_generator]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[barcode_generator]')">Copy</button>
+                </div>
+
+                <h3>Description</h3>
+                <p>The Barcode Generator creates professional barcodes in real-time with support for multiple industry-standard formats. Perfect for product labeling, inventory management, and retail applications.</p>
+
+                <h3>Attributes</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Description</th>
+                            <th>Default Value</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>title</code></td>
+                            <td>Custom title displayed above generator</td>
+                            <td>"Barcode Generator"</td>
+                            <td><code>title="Create Barcodes"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>subtitle</code></td>
+                            <td>Subtitle text with description</td>
+                            <td>"Generate barcodes instantly..."</td>
+                            <td><code>subtitle="Create product barcodes"</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Examples</h3>
+
+                <h4>Example 1: Basic Barcode Generator</h4>
+                <div class="crc-shortcode-box">
+                    <code>[barcode_generator]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[barcode_generator]')">Copy</button>
+                </div>
+
+                <h4>Example 2: Custom Title</h4>
+                <div class="crc-shortcode-box">
+                    <code>[barcode_generator title="Product Barcode Creator" subtitle="Generate professional barcodes for your products"]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[barcode_generator title=&quot;Product Barcode Creator&quot; subtitle=&quot;Generate professional barcodes for your products&quot;]')">Copy</button>
+                </div>
+
+                <h3>Supported Barcode Formats</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Format</th>
+                            <th>Description</th>
+                            <th>Input Requirements</th>
+                            <th>Common Use Cases</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>CODE128</strong></td>
+                            <td>Most flexible format</td>
+                            <td>Any ASCII characters (letters, numbers, symbols)</td>
+                            <td>General purpose, shipping labels, logistics</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CODE39</strong></td>
+                            <td>Alphanumeric format</td>
+                            <td>0-9, A-Z, and symbols: - . $ / + % space</td>
+                            <td>Industrial, military, healthcare</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EAN13</strong></td>
+                            <td>European Article Number</td>
+                            <td>Exactly 13 digits</td>
+                            <td>Retail products in Europe (e.g., 5901234123457)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>EAN8</strong></td>
+                            <td>Short EAN format</td>
+                            <td>Exactly 8 digits</td>
+                            <td>Small retail products (e.g., 96385074)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>UPC</strong></td>
+                            <td>Universal Product Code</td>
+                            <td>Exactly 12 digits</td>
+                            <td>Retail products in North America (e.g., 123456789012)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Key Features</h3>
+                <div class="crc-feature-grid">
+                    <div class="crc-feature-item">
+                        <h4>Real-Time Preview</h4>
+                        <p>See your barcode generated instantly as you type - no submit button needed.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>5 Barcode Formats</h4>
+                        <p>Support for CODE128, CODE39, EAN13, EAN8, and UPC formats.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Smart Validation</h4>
+                        <p>Automatic validation based on barcode type with clear error messages.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>PNG Download</h4>
+                        <p>Download high-quality barcodes as PNG images for printing or digital use.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Clean Preview Area</h4>
+                        <p>Large, centered preview with white background perfect for visibility.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Format Guidance</h4>
+                        <p>Built-in requirements list for each barcode format with examples.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Mobile Responsive</h4>
+                        <p>Works perfectly on all devices - desktop, tablet, and mobile.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Professional Design</h4>
+                        <p>Clean, modern UI with Shopify purple accent color.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>JsBarcode Library</h4>
+                        <p>Powered by industry-standard JsBarcode library for reliability.</p>
+                    </div>
+                </div>
+
+                <h3>Validation Rules</h3>
+                <ul>
+                    <li><strong>CODE128:</strong> Accepts any ASCII characters - most flexible option for general use</li>
+                    <li><strong>CODE39:</strong> Must contain only 0-9, A-Z (uppercase), and special symbols: - . $ / + % space</li>
+                    <li><strong>EAN13:</strong> Must be exactly 13 numeric digits (no letters or symbols)</li>
+                    <li><strong>EAN8:</strong> Must be exactly 8 numeric digits (no letters or symbols)</li>
+                    <li><strong>UPC:</strong> Must be exactly 12 numeric digits (standard UPC-A format)</li>
+                </ul>
+
+                <h3>Use Cases</h3>
+                <ul>
+                    <li><strong>E-commerce Stores:</strong> Generate product barcodes for inventory management</li>
+                    <li><strong>Retail Businesses:</strong> Create barcodes for pricing and POS systems</li>
+                    <li><strong>Warehouses:</strong> Generate barcodes for shipments and logistics</li>
+                    <li><strong>Manufacturing:</strong> Create barcodes for products and parts tracking</li>
+                    <li><strong>Libraries:</strong> Generate barcodes for books and media cataloging</li>
+                    <li><strong>Events:</strong> Create barcodes for tickets and registrations</li>
+                    <li><strong>Healthcare:</strong> Generate patient ID and medication barcodes</li>
+                    <li><strong>Asset Management:</strong> Create barcodes for equipment tracking</li>
+                    <li><strong>Shipping:</strong> Generate shipping labels with tracking barcodes</li>
+                    <li><strong>Testing:</strong> Create test barcodes for scanner validation</li>
+                </ul>
+
+                <h3>Best Practices</h3>
+                <ul>
+                    <li><strong>Choose the Right Format:</strong> Use EAN13/UPC for retail products, CODE128 for general purpose</li>
+                    <li><strong>Verify Requirements:</strong> Check format requirements before entering data</li>
+                    <li><strong>Test Scannability:</strong> Print and test barcodes with your scanner before mass production</li>
+                    <li><strong>Maintain Consistency:</strong> Use the same format across similar products/categories</li>
+                    <li><strong>Keep Records:</strong> Document which barcodes are assigned to which products</li>
+                    <li><strong>Use Standard Numbers:</strong> For EAN/UPC, use officially registered numbers when selling retail</li>
+                    <li><strong>Print Quality:</strong> Ensure high-quality printing for reliable scanning</li>
+                    <li><strong>Size Matters:</strong> Maintain appropriate barcode size for your application (minimum 1 inch wide)</li>
+                    <li><strong>White Space:</strong> Leave adequate white space (quiet zone) around barcodes</li>
+                    <li><strong>Contrast:</strong> Use high contrast (black bars on white background) for best results</li>
+                </ul>
+
+                <h3>Technical Details</h3>
+                <ul>
+                    <li><strong>Library:</strong> Powered by JsBarcode 3.11.5 (industry-standard)</li>
+                    <li><strong>Output Format:</strong> High-quality PNG images for printing and digital use</li>
+                    <li><strong>Canvas Rendering:</strong> Uses HTML5 Canvas for barcode generation</li>
+                    <li><strong>Real-Time Generation:</strong> Updates instantly on input change</li>
+                    <li><strong>Validation:</strong> Client-side validation with regex patterns</li>
+                    <li><strong>Download:</strong> Uses Canvas.toBlob() for PNG export</li>
+                    <li><strong>File Naming:</strong> Automatic filename based on barcode data</li>
+                    <li><strong>Error Handling:</strong> Comprehensive error messages for invalid input</li>
+                </ul>
+
+                <h3>Common Barcode Examples</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Format</th>
+                            <th>Example Data</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>CODE128</td>
+                            <td>ABC-12345</td>
+                            <td>Alphanumeric with special characters</td>
+                        </tr>
+                        <tr>
+                            <td>CODE39</td>
+                            <td>PRODUCT-001</td>
+                            <td>Uppercase letters with hyphen</td>
+                        </tr>
+                        <tr>
+                            <td>EAN13</td>
+                            <td>5901234123457</td>
+                            <td>13-digit European product code</td>
+                        </tr>
+                        <tr>
+                            <td>EAN8</td>
+                            <td>96385074</td>
+                            <td>8-digit short product code</td>
+                        </tr>
+                        <tr>
+                            <td>UPC</td>
+                            <td>012345678905</td>
+                            <td>12-digit North American product code</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Troubleshooting</h3>
+                <ul>
+                    <li><strong>"Please enter barcode data":</strong> The data field is empty - enter some data first</li>
+                    <li><strong>"EAN13 requires exactly 13 digits":</strong> Check that you have exactly 13 numeric digits</li>
+                    <li><strong>"CODE39 accepts...":</strong> Remove lowercase letters or unsupported symbols</li>
+                    <li><strong>"Failed to generate barcode":</strong> Try a different format or check for invalid characters</li>
+                    <li><strong>Barcode won't scan:</strong> Ensure adequate size, contrast, and print quality</li>
+                    <li><strong>Download not working:</strong> Check browser compatibility and enable downloads</li>
+                </ul>
+            </div>
+
+            <!-- QR Code Generator Documentation -->
+            <div class="crc-admin-section">
+                <h2>12. QR Code Generator</h2>
+
+                <h3>Basic Usage</h3>
+                <p>To display the QR Code Generator, use this shortcode:</p>
+
+                <div class="crc-shortcode-box">
+                    <code>[qr_code_generator]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[qr_code_generator]')">Copy</button>
+                </div>
+
+                <h3>Description</h3>
+                <p>The QR Code Generator creates instant QR codes for multiple data types with a tab-based interface. Perfect for marketing materials, business cards, product packaging, and digital content sharing.</p>
+
+                <h3>Attributes</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Attribute</th>
+                            <th>Description</th>
+                            <th>Default Value</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>title</code></td>
+                            <td>Custom title displayed above generator</td>
+                            <td>"QR Code Generator"</td>
+                            <td><code>title="Create QR Codes"</code></td>
+                        </tr>
+                        <tr>
+                            <td><code>subtitle</code></td>
+                            <td>Subtitle text with description</td>
+                            <td>"Create QR codes for websites..."</td>
+                            <td><code>subtitle="Generate QR codes instantly"</code></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Examples</h3>
+
+                <h4>Example 1: Basic QR Code Generator</h4>
+                <div class="crc-shortcode-box">
+                    <code>[qr_code_generator]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[qr_code_generator]')">Copy</button>
+                </div>
+
+                <h4>Example 2: Custom Title</h4>
+                <div class="crc-shortcode-box">
+                    <code>[qr_code_generator title="Marketing QR Creator" subtitle="Create QR codes for your campaigns"]</code>
+                    <button class="crc-copy-shortcode" onclick="crcCopyShortcode(this, '[qr_code_generator title=&quot;Marketing QR Creator&quot; subtitle=&quot;Create QR codes for your campaigns&quot;]')">Copy</button>
+                </div>
+
+                <h3>Supported Data Types</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Description</th>
+                            <th>Input Requirements</th>
+                            <th>Output Format</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Website URL</strong></td>
+                            <td>Link to any website</td>
+                            <td>Must start with http:// or https://</td>
+                            <td>Opens URL in browser when scanned</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Phone Number</strong></td>
+                            <td>Direct phone call link</td>
+                            <td>Valid international format (e.g., +1234567890)</td>
+                            <td>Opens phone dialer with number when scanned</td>
+                        </tr>
+                        <tr>
+                            <td><strong>SMS</strong></td>
+                            <td>Pre-filled text message</td>
+                            <td>Phone number + message (both required)</td>
+                            <td>Opens SMS app with pre-filled number and message</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Plain Text</strong></td>
+                            <td>Any text content</td>
+                            <td>Any text (no restrictions)</td>
+                            <td>Displays text when scanned</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Key Features</h3>
+                <div class="crc-feature-grid">
+                    <div class="crc-feature-item">
+                        <h4>Tab Interface</h4>
+                        <p>Easy-to-use tab navigation for switching between data types.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Real-Time Preview</h4>
+                        <p>See QR code generated instantly with 300ms debounce for smooth performance.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>4 Data Types</h4>
+                        <p>Support for Website URL, Phone Number, SMS, and Plain Text.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Smart Validation</h4>
+                        <p>Type-specific validation with clear error messages.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>PNG Download</h4>
+                        <p>Download high-quality 200x200px QR codes as PNG images.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Dynamic Fields</h4>
+                        <p>Input fields change based on selected data type.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>High Quality Output</h4>
+                        <p>QR codes with high error correction level (Level H - 30%).</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>Mobile Responsive</h4>
+                        <p>Works perfectly on all devices with adaptive tab layout.</p>
+                    </div>
+                    <div class="crc-feature-item">
+                        <h4>QRCode.js Library</h4>
+                        <p>Powered by reliable QRCode.js library for consistent results.</p>
+                    </div>
+                </div>
+
+                <h3>Validation Rules</h3>
+                <ul>
+                    <li><strong>Website URL:</strong> Must start with http:// or https:// and be a valid URL format</li>
+                    <li><strong>Phone Number:</strong> Must contain 10-15 digits, can include + prefix and formatting characters</li>
+                    <li><strong>SMS Phone:</strong> Same as phone number validation</li>
+                    <li><strong>SMS Message:</strong> Required when phone number is entered, no character limit</li>
+                    <li><strong>Plain Text:</strong> Any text content accepted, no restrictions</li>
+                </ul>
+
+                <h3>Use Cases</h3>
+                <ul>
+                    <li><strong>Marketing Materials:</strong> Add QR codes to flyers, posters, and brochures linking to websites</li>
+                    <li><strong>Business Cards:</strong> Include QR code for instant contact information or website access</li>
+                    <li><strong>Product Packaging:</strong> Link customers to product information, manuals, or support</li>
+                    <li><strong>Event Registration:</strong> Quick access to event pages or registration forms</li>
+                    <li><strong>Restaurant Menus:</strong> Digital menu access via QR code scan</li>
+                    <li><strong>WiFi Sharing:</strong> Encode WiFi credentials for easy network access</li>
+                    <li><strong>Payment Links:</strong> Direct customers to payment pages or checkout</li>
+                    <li><strong>Social Media:</strong> Quick follow buttons via QR codes on print materials</li>
+                    <li><strong>Support Tickets:</strong> Link to customer support pages or ticket systems</li>
+                    <li><strong>App Downloads:</strong> Direct link to app store pages</li>
+                    <li><strong>Video Content:</strong> Link to YouTube or video hosting platforms</li>
+                    <li><strong>Feedback Forms:</strong> Quick access to surveys and feedback collection</li>
+                </ul>
+
+                <h3>Best Practices</h3>
+                <ul>
+                    <li><strong>Use HTTPS URLs:</strong> Always use secure HTTPS links for better trust and security</li>
+                    <li><strong>Test Before Printing:</strong> Scan QR codes with multiple devices before mass production</li>
+                    <li><strong>Minimum Size:</strong> Print QR codes at least 1 inch (2.5cm) square for reliable scanning</li>
+                    <li><strong>High Contrast:</strong> Ensure good contrast between QR code and background</li>
+                    <li><strong>White Border:</strong> Leave adequate white space around QR code (quiet zone)</li>
+                    <li><strong>Short URLs:</strong> Use URL shorteners for complex web addresses to create simpler QR codes</li>
+                    <li><strong>Mobile-Friendly Destinations:</strong> Ensure target URLs are mobile-responsive</li>
+                    <li><strong>Clear Call-to-Action:</strong> Add text like "Scan to visit website" near QR code</li>
+                    <li><strong>Error Correction:</strong> Our QR codes use Level H (30% error correction) for reliability</li>
+                    <li><strong>Multiple Scans:</strong> Test with different QR scanner apps and camera apps</li>
+                    <li><strong>Avoid Distortion:</strong> Never stretch or compress QR code images</li>
+                    <li><strong>Print Quality:</strong> Use high-resolution printing for best scan results</li>
+                </ul>
+
+                <h3>Technical Details</h3>
+                <ul>
+                    <li><strong>Library:</strong> QRCode.js v1.0.0 (industry-standard)</li>
+                    <li><strong>QR Code Size:</strong> 200x200 pixels (can be scaled for printing)</li>
+                    <li><strong>Error Correction:</strong> Level H (High - 30% recovery capability)</li>
+                    <li><strong>Output Format:</strong> PNG image for universal compatibility</li>
+                    <li><strong>Color Scheme:</strong> Black on white for maximum scanability</li>
+                    <li><strong>Real-Time Generation:</strong> 300ms debounce for optimal performance</li>
+                    <li><strong>Canvas Rendering:</strong> HTML5 Canvas for QR code generation</li>
+                    <li><strong>Download:</strong> Canvas.toBlob() for high-quality PNG export</li>
+                    <li><strong>File Naming:</strong> qrcode-[timestamp].png format</li>
+                    <li><strong>Validation:</strong> Client-side with type-specific rules</li>
+                </ul>
+
+                <h3>Data Format Examples</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Type</th>
+                            <th>Input Example</th>
+                            <th>QR Code Contains</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Website URL</td>
+                            <td>https://example.com</td>
+                            <td>https://example.com</td>
+                        </tr>
+                        <tr>
+                            <td>Phone Number</td>
+                            <td>+1234567890</td>
+                            <td>tel:+1234567890</td>
+                        </tr>
+                        <tr>
+                            <td>SMS</td>
+                            <td>Phone: +1234567890<br>Message: Hello World</td>
+                            <td>SMSTO:+1234567890:Hello World</td>
+                        </tr>
+                        <tr>
+                            <td>Plain Text</td>
+                            <td>Any text content here</td>
+                            <td>Any text content here</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>QR Code Standards</h3>
+                <p>Our QR codes follow ISO/IEC 18004 standard with the following specifications:</p>
+                <ul>
+                    <li><strong>Version:</strong> Automatic (1-40 based on data length)</li>
+                    <li><strong>Error Correction:</strong> Level H (30% - highest level)</li>
+                    <li><strong>Encoding:</strong> UTF-8 for international character support</li>
+                    <li><strong>Module Size:</strong> Optimized for 200x200px output</li>
+                    <li><strong>Quiet Zone:</strong> 4 modules (automatically added)</li>
+                </ul>
+
+                <h3>Troubleshooting</h3>
+                <ul>
+                    <li><strong>"Please enter a URL":</strong> The URL field is empty - enter a website address</li>
+                    <li><strong>"URL must start with http://":</strong> Add http:// or https:// prefix to your URL</li>
+                    <li><strong>"Please enter a valid URL":</strong> Check URL format (e.g., https://example.com)</li>
+                    <li><strong>"Please enter a phone number":</strong> Phone field is empty - enter a valid number</li>
+                    <li><strong>"Please enter a valid phone number":</strong> Use international format like +1234567890</li>
+                    <li><strong>"Please enter a message":</strong> SMS requires both phone number and message</li>
+                    <li><strong>"Please enter some text":</strong> Text field is empty - add some content</li>
+                    <li><strong>QR code won't scan:</strong> Ensure adequate size, lighting, and camera focus</li>
+                    <li><strong>Download not working:</strong> Check browser permissions for downloads</li>
+                    <li><strong>Tabs not switching:</strong> Refresh page or check JavaScript console for errors</li>
+                </ul>
+
+                <h3>Browser Compatibility</h3>
+                <ul>
+                    <li>Chrome 90+ (full support)</li>
+                    <li>Firefox 88+ (full support)</li>
+                    <li>Safari 14+ (full support)</li>
+                    <li>Edge 90+ (full support)</li>
+                    <li>Mobile browsers (iOS Safari 14+, Chrome Mobile 90+)</li>
+                </ul>
+
+                <h3>Print Recommendations</h3>
+                <table class="crc-attributes-table">
+                    <thead>
+                        <tr>
+                            <th>Print Size</th>
+                            <th>Recommended Use</th>
+                            <th>Scanning Distance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1" x 1" (2.5cm)</td>
+                            <td>Business cards, small labels</td>
+                            <td>4-6 inches (10-15cm)</td>
+                        </tr>
+                        <tr>
+                            <td>2" x 2" (5cm)</td>
+                            <td>Flyers, product tags</td>
+                            <td>8-12 inches (20-30cm)</td>
+                        </tr>
+                        <tr>
+                            <td>4" x 4" (10cm)</td>
+                            <td>Posters, signage</td>
+                            <td>16-24 inches (40-60cm)</td>
+                        </tr>
+                        <tr>
+                            <td>8" x 8" (20cm)</td>
+                            <td>Large posters, banners</td>
+                            <td>32-48 inches (80-120cm)</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
             <!-- Support -->
